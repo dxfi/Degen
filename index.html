@@ -5,40 +5,133 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Token Minting</title>
     <link rel="stylesheet" href="styles.css">
-    <style>body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
+    <style>:root {
+  --primary-color: #007BFF;
+  --secondary-color: #6c757d;
+  --text-color: #333;
+  --bg-color: #f8f9fa;
+  --border-radius: 0.5rem;
+  --transition: all 0.3s ease;
+}
+
+body {
+  font-family: 'Roboto', Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin: 0;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+h1 {
+  color: var(--primary-color);
+  margin-bottom: 2rem;
+  text-align: center;
 }
 
 button {
-    padding: 10px 20px;
-    margin: 10px 0;
-    font-size: 16px;
-    cursor: pointer;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#walletInfo, #connectWallet, #mintSection, #networkSwitch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 1rem;
+}
+
+#walletInfo p, #networkSwitch p {
+  text-align: center;
+  margin: 0.5rem 0;
 }
 
 #mintProgress {
-    margin-top: 20px;
-    text-align: center;
+  width: 100%;
+  max-width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
 }
 
-#progressBar {
-    width: 200px;
-    height: 20px;
+progress {
+  width: 100%;
+  height: 1rem;
+  border-radius: var(--border-radius);
+  appearance: none;
+}
+
+progress::-webkit-progress-bar {
+  background-color: var(--secondary-color);
+  border-radius: var(--border-radius);
+}
+
+progress::-webkit-progress-value {
+  background-color: var(--primary-color);
+  border-radius: var(--border-radius);
+}
+
+progress::-moz-progress-bar {
+  background-color: var(--primary-color);
+  border-radius: var(--border-radius);
 }
 
 #progressText {
-    display: block;
-    margin-top: 5px;
+  font-size: 0.8rem;
+  color: var(--text-color);
+  margin-top: 0.5rem;
 }
 
 #status {
-    margin-top: 20px;
-    font-weight: bold;
-    color: #333;
+  margin-top: 1rem;
+  text-align: center;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+/* Animasi untuk menampilkan/menyembunyikan elemen */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+#walletInfo, #connectWallet, #mintSection, #networkSwitch {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.hidden {
+  display: none;
+  animation: fadeOut 0.5s ease-out;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  button {
+    width: 100%;
+  }
 }</style>
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 </head>
@@ -47,6 +140,17 @@ button {
 
     <div id="connectWallet">
         <button onclick="connectWallet()">Connect Wallet</button>
+    </div>
+
+    <div id="walletInfo" style="display: none;">
+        <p>Wallet Address: <span id="walletAddress"></span></p>
+        <p>ETH Balance: <span id="ethBalance"></span></p>
+        <button onclick="disconnectWallet()">Disconnect Wallet</button>
+    </div>
+
+    <div id="networkSwitch" style="display: none;">
+        <p>Please switch to Base Mainnet.</p>
+        <button onclick="switchToBaseNetwork()">Switch Network</button>
     </div>
 
     <div id="mintSection" style="display: none;">
@@ -63,19 +167,25 @@ button {
     // Include your ABI here
 ];
 
-const minterContractAddress = 'YOUR_CONTRACT_ADDRESS_HERE'; // Ganti dengan alamat kontrak Anda
-const MINT_PRICE = '0.0000735'; // Harga dalam ETH untuk minting 1000 token
+const minterContractAddress = 'YOUR_CONTRACT_ADDRESS_HERE'; // Replace with your contract address
+const MINT_PRICE = '0.0000735'; // Price in ETH for minting 1000 tokens
+const BASE_CHAIN_ID = 8453; // Chain ID for Base Mainnet
 
 let web3;
 let minterInstance;
+let currentAccount;
 
 async function connectWallet() {
     if (window.ethereum) {
         try {
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
             web3 = new Web3(window.ethereum);
+            currentAccount = accounts[0];
+            await checkNetwork();
             initContract();
+            updateWalletInfo();
             document.getElementById('connectWallet').style.display = 'none';
+            document.getElementById('walletInfo').style.display = 'block';
             document.getElementById('mintSection').style.display = 'block';
         } catch (error) {
             console.error("User denied account access");
@@ -91,17 +201,79 @@ async function initContract() {
     }
 }
 
+async function checkNetwork() {
+    const chainId = await web3.eth.getChainId();
+    if (chainId !== BASE_CHAIN_ID) {
+        document.getElementById('networkSwitch').style.display = 'block';
+        document.getElementById('mintSection').style.display = 'none';
+    } else {
+        document.getElementById('networkSwitch').style.display = 'none';
+    }
+}
+
+async function switchToBaseNetwork() {
+    try {
+        await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: `0x${BASE_CHAIN_ID.toString(16)}` }],
+        });
+        await checkNetwork();
+    } catch (switchError) {
+        // This error code indicates that the chain has not been added to MetaMask.
+        if (switchError.code === 4902) {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{
+                        chainId: `0x${BASE_CHAIN_ID.toString(16)}`,
+                        chainName: 'Base Mainnet',
+                        nativeCurrency: {
+                            name: 'Ether',
+                            symbol: 'ETH',
+                            decimals: 18
+                        },
+                        rpcUrls: ['https://mainnet.base.org'],
+                        blockExplorerUrls: ['https://basescan.org/']
+                    }],
+                });
+                await checkNetwork();
+            } catch (addError) {
+                console.error(addError);
+            }
+        }
+        console.error(switchError);
+    }
+}
+
+async function disconnectWallet() {
+    currentAccount = null;
+    document.getElementById('connectWallet').style.display = 'block';
+    document.getElementById('walletInfo').style.display = 'none';
+    document.getElementById('mintSection').style.display = 'none';
+    document.getElementById('networkSwitch').style.display = 'none';
+    document.getElementById('walletAddress').innerText = '';
+    document.getElementById('ethBalance').innerText = '';
+}
+
+async function updateWalletInfo() {
+    if (currentAccount) {
+        document.getElementById('walletAddress').innerText = currentAccount;
+        const balance = await web3.eth.getBalance(currentAccount);
+        const balanceInEth = web3.utils.fromWei(balance, 'ether');
+        document.getElementById('ethBalance').innerText = `${balanceInEth} ETH`;
+    }
+}
+
 async function mintTokens() {
     const amountInWei = web3.utils.toWei(MINT_PRICE, 'ether');
     const progressBar = document.getElementById('progressBar');
     const progressText = document.getElementById('progressText');
 
     try {
-        const accounts = await web3.eth.getAccounts();
         const transaction = await minterInstance.methods.mintToken().send({ 
-            from: accounts[0], 
+            from: currentAccount, 
             value: amountInWei,
-            gas: 200000, // Estimasi gas, sesuaikan sesuai kebutuhan
+            gas: 200000, // Gas estimation, adjust as needed
         }, (error, txHash) => {
             if (error) {
                 document.getElementById('status').innerText = `Error minting tokens: ${error.message}`;
@@ -111,6 +283,7 @@ async function mintTokens() {
             }
         });
         document.getElementById('status').innerText = '1000 Tokens minted successfully!';
+        await updateWalletInfo(); // Update balance after minting
     } catch (error) {
         document.getElementById('status').innerText = `Error minting tokens: ${error.message}`;
     }
@@ -123,7 +296,7 @@ function updateMintingProgress(txHash, progressBar, progressText) {
             const receipt = await web3.eth.getTransactionReceipt(txHash);
             if (receipt) {
                 if (receipt.status) {
-                    progress = Math.min(100, progress + 25); // Increase by 25% every 5 seconds until 100%
+                    progress = Math.min(100, progress + 25);
                     progressBar.value = progress;
                     progressText.innerText = `${progress}%`;
                     if (progress >= 100) clearInterval(interval);
@@ -140,6 +313,13 @@ function updateMintingProgress(txHash, progressBar, progressText) {
 }
 
 // Initialize Web3 when the page loads
-window.onload = connectWallet;</script>
+window.onload = () => {
+    if (window.ethereum) {
+        web3 = new Web3(window.ethereum);
+        checkNetwork();
+    } else {
+        console.log('Please install MetaMask!');
+    }
+};</script>
 </body>
 </html>
