@@ -3,103 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Degen Token Purchase</title>
+    <title>Token Minting</title>
     <link rel="stylesheet" href="styles.css">
-    <style>#mint-progress {
+    <style>body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 10px 0;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#mintProgress {
     margin-top: 20px;
     text-align: center;
 }
 
-#progress-bar {
-    width: 100%;
-    background-color: #ddd;
+#progressBar {
+    width: 200px;
     height: 20px;
-    margin-top: 10px;
 }
 
-#progress-filled {
-    width: 0%;
-    height: 100%;
-    background-color: #4CAF50;
-    text-align: center;
-    line-height: 20px;
-    color: white;
-    transition: width 0.5s ease-in-out;
+#progressText {
+    display: block;
+    margin-top: 5px;
+}
+
+#status {
+    margin-top: 20px;
+    font-weight: bold;
+    color: #333;
 }</style>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 </head>
 <body>
-    <div id="connect-wallet">Connect Wallet</div>
-    <div id="buy-tokens">Buy Tokens</div>
-    <div id="mint-progress">Mint Progress: <span id="progress-value">0%</span></div>
-    <div id="progress-bar">
-        <div id="progress-filled"></div>
+    <h1>Token Minting</h1>
+
+    <div id="connectWallet">
+        <button onclick="connectWallet()">Connect Wallet</button>
     </div>
-    <script src="web3.min.js"></script>
-    <script>let web3;
-let contract;
-const contractAddress = "YOUR_CONTRACT_ADDRESS_HERE"; // Ganti dengan alamat kontrak Anda
-const ABI = [
-    // Masukkan ABI dari kontrak di sini
-    {
-        "constant": false,
-        "inputs": [],
-        "name": "buyTokens",
-        "outputs": [],
-        "payable": true,
-        "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "getMintProgress",
-        "outputs": [{"name": "", "type": "uint256"}],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    }
+
+    <div id="mintSection" style="display: none;">
+        <button onclick="mintTokens()">Mint 1000 Tokens</button>
+        <div id="mintProgress">
+            <progress id="progressBar" value="0" max="100"></progress>
+            <span id="progressText">0%</span>
+        </div>
+    </div>
+
+    <div id="status"></div>
+
+    <script>const minterContractABI = [
+    // Include your ABI here
 ];
-const BASE_CHAIN_ID = 8453; // ID Chain untuk Base Network
 
-// ... (fungsi connectWallet dan switchToBaseNetwork tetap sama)
+const minterContractAddress = 'YOUR_CONTRACT_ADDRESS_HERE'; // Ganti dengan alamat kontrak Anda
+const MINT_PRICE = '0.0000735'; // Harga dalam ETH untuk minting 1000 token
 
-async function updateMintProgress() {
-    if (contract) {
+let web3;
+let minterInstance;
+
+async function connectWallet() {
+    if (window.ethereum) {
         try {
-            const progress = await contract.methods.getMintProgress().call();
-            document.getElementById('progress-value').innerText = `${progress}%`;
-            document.getElementById('progress-filled').style.width = `${progress}%`;
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            web3 = new Web3(window.ethereum);
+            initContract();
+            document.getElementById('connectWallet').style.display = 'none';
+            document.getElementById('mintSection').style.display = 'block';
         } catch (error) {
-            console.error("Error fetching mint progress:", error);
-        }
-    }
-}
-
-// Panggil updateMintProgress saat halaman dimuat dan setelah setiap pembelian token
-window.onload = () => {
-    setInterval(updateMintProgress, 5000); // Pembaruan setiap 5 detik
-};
-
-async function buyTokens() {
-    if (contract) {
-        try {
-            const accounts = await web3.eth.getAccounts();
-            await contract.methods.buyTokens().send({
-                from: accounts[0],
-                value: web3.utils.toWei('0.0001', 'ether')
-            });
-            alert("Tokens bought successfully!");
-            await updateMintProgress(); // Memperbarui progres setelah pembelian
-        } catch (error) {
-            console.error(error);
-            alert("Failed to buy tokens!");
+            console.error("User denied account access");
         }
     } else {
-        alert("Please connect your wallet first!");
+        console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
     }
 }
 
-document.getElementById('connect-wallet').addEventListener('click', connectWallet);
-document.getElementById('buy-tokens').addEventListener('click', buyTokens);</script>
+async function initContract() {
+    if (web3) {
+        minterInstance = new web3.eth.Contract(minterContractABI, minterContractAddress);
+    }
+}
+
+async function mintTokens() {
+    const amountInWei = web3.utils.toWei(MINT_PRICE, 'ether');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+
+    try {
+        const accounts = await web3.eth.getAccounts();
+        const transaction = await minterInstance.methods.mintToken().send({ 
+            from: accounts[0], 
+            value: amountInWei,
+            gas: 200000, // Estimasi gas, sesuaikan sesuai kebutuhan
+        }, (error, txHash) => {
+            if (error) {
+                document.getElementById('status').innerText = `Error minting tokens: ${error.message}`;
+            } else {
+                console.log('Transaction hash:', txHash);
+                updateMintingProgress(txHash, progressBar, progressText);
+            }
+        });
+        document.getElementById('status').innerText = '1000 Tokens minted successfully!';
+    } catch (error) {
+        document.getElementById('status').innerText = `Error minting tokens: ${error.message}`;
+    }
+}
+
+function updateMintingProgress(txHash, progressBar, progressText) {
+    let progress = 0;
+    const interval = setInterval(async () => {
+        if (progress < 100) {
+            const receipt = await web3.eth.getTransactionReceipt(txHash);
+            if (receipt) {
+                if (receipt.status) {
+                    progress = Math.min(100, progress + 25); // Increase by 25% every 5 seconds until 100%
+                    progressBar.value = progress;
+                    progressText.innerText = `${progress}%`;
+                    if (progress >= 100) clearInterval(interval);
+                } else {
+                    clearInterval(interval);
+                    document.getElementById('status').innerText = 'Transaction failed';
+                    progressText.innerText = 'Failed';
+                }
+            }
+        } else {
+            clearInterval(interval);
+        }
+    }, 5000); // Update every 5 seconds
+}
+
+// Initialize Web3 when the page loads
+window.onload = connectWallet;</script>
 </body>
 </html>
