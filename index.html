@@ -3,240 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DegenMint DApp</title>
+    <title>Degen Token Purchase</title>
     <link rel="stylesheet" href="styles.css">
-    <style>body {
-    font-family: 'Roboto', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    background: #f5f5f5;
-}
-
-.container {
-    text-align: center;
-    background: #ffffff;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    width: 90%;
-    max-width: 400px;
-}
-
-h1 {
-    color: #333333;
-    font-size: 2em;
-    margin-bottom: 20px;
-}
-
-.progress-bar {
-    width: 100%;
-    height: 20px;
-    background-color: #e0e0e0;
-    margin: 20px auto;
-    border-radius: 10px;
-    position: relative;
-    overflow: hidden;
-}
-
-.progress {
-    height: 100%;
-    background: linear-gradient(to right, #4CAF50, #2196F3);
-    border-radius: 10px;
-    transition: width 0.5s ease;
-}
-
-#percentage {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-weight: bold;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-}
-
-button {
-    margin: 15px 0;
-    padding: 15px 20px;
-    font-size: 1em;
-    cursor: pointer;
-    width: 100%;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    background: #2196F3;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    transition: background 0.3s ease;
-}
-
-button:hover {
-    background: #1E88E5;
-}
-
-button:disabled {
-    background: #B0BEC5;
-    cursor: not-allowed;
-}
-
-#status {
+    <style>#mint-progress {
     margin-top: 20px;
-    color: #F44336;
-    font-weight: bold;
+    text-align: center;
+}
+
+#progress-bar {
+    width: 100%;
+    background-color: #ddd;
+    height: 20px;
+    margin-top: 10px;
+}
+
+#progress-filled {
+    width: 0%;
+    height: 100%;
+    background-color: #4CAF50;
+    text-align: center;
+    line-height: 20px;
+    color: white;
+    transition: width 0.5s ease-in-out;
 }</style>
 </head>
 <body>
-    <div class="container">
-        <h1>DegenMint</h1>
-        <div class="progress-bar">
-            <div id="progress" class="progress"></div>
-            <div id="percentage"></div>
-        </div>
-        <button id="connectButton">Connect Wallet</button>
-        <button id="mintButton" disabled>Mint Token</button>
-        <div id="status"></div>
+    <div id="connect-wallet">Connect Wallet</div>
+    <div id="buy-tokens">Buy Tokens</div>
+    <div id="mint-progress">Mint Progress: <span id="progress-value">0%</span></div>
+    <div id="progress-bar">
+        <div id="progress-filled"></div>
     </div>
-    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
-    <script>
-        const connectButton = document.getElementById('connectButton');
-const mintButton = document.getElementById('mintButton');
-const progress = document.getElementById('progress');
-const percentage = document.getElementById('percentage');
-const status = document.getElementById('status');
-
-let provider;
-let signer;
+    <script src="web3.min.js"></script>
+    <script>let web3;
 let contract;
-
-// Alamat kontrak Anda
-const contractAddress = "YOUR_CONTRACT_ADDRESS_HERE"; 
-// ABI dari kontrak Anda
-const abi = [
-    // Add the ABI of your contract here, you can get this from Remix or Truffle
+const contractAddress = "YOUR_CONTRACT_ADDRESS_HERE"; // Ganti dengan alamat kontrak Anda
+const ABI = [
+    // Masukkan ABI dari kontrak di sini
     {
+        "constant": false,
         "inputs": [],
-        "name": "getProgress",
-        "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-        "stateMutability": "view",
+        "name": "buyTokens",
+        "outputs": [],
+        "payable": true,
+        "stateMutability": "payable",
         "type": "function"
     },
     {
-        "inputs": [{"internalType": "uint256", "name": "amount", "type": "uint256"}],
-        "name": "mint",
-        "outputs": [],
-        "stateMutability": "payable",
+        "constant": true,
+        "inputs": [],
+        "name": "getMintProgress",
+        "outputs": [{"name": "", "type": "uint256"}],
+        "payable": false,
+        "stateMutability": "view",
         "type": "function"
     }
 ];
+const BASE_CHAIN_ID = 8453; // ID Chain untuk Base Network
 
-// Jaringan Base
-const baseNetwork = {
-    chainId: '0x2105',
-    chainName: 'Base',
-    nativeCurrency: {
-        name: 'Ether',
-        symbol: 'ETH',
-        decimals: 18
-    },
-    rpcUrls: ['https://mainnet.base.org'],
-    blockExplorerUrls: ['https://basescan.org/']
+// ... (fungsi connectWallet dan switchToBaseNetwork tetap sama)
+
+async function updateMintProgress() {
+    if (contract) {
+        try {
+            const progress = await contract.methods.getMintProgress().call();
+            document.getElementById('progress-value').innerText = `${progress}%`;
+            document.getElementById('progress-filled').style.width = `${progress}%`;
+        } catch (error) {
+            console.error("Error fetching mint progress:", error);
+        }
+    }
+}
+
+// Panggil updateMintProgress saat halaman dimuat dan setelah setiap pembelian token
+window.onload = () => {
+    setInterval(updateMintProgress, 5000); // Pembaruan setiap 5 detik
 };
 
-// Fungsi untuk menangani koneksi wallet
-async function connectWallet() {
-    if (typeof window.ethereum !== 'undefined') {
+async function buyTokens() {
+    if (contract) {
         try {
-            // Memastikan kita menggunakan ethers dari window.ethers
-            if (!window.ethers) {
-                throw new Error("Ethers.js is not loaded correctly");
-            }
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-            provider = new ethers.providers.Web3Provider(window.ethereum);
-            signer = provider.getSigner();
-
-            // Memeriksa apakah pengguna sudah di jaringan Base
-            const { chainId } = await provider.getNetwork();
-            if (chainId !== parseInt(baseNetwork.chainId, 16)) {
-                status.textContent = "Please switch network to Base";
-                await switchToBaseNetwork();
-                return;
-            }
-
-            contract = new ethers.Contract(contractAddress, abi, signer);
-            connectButton.textContent = "Connected";
-            connectButton.disabled = true;
-            mintButton.disabled = false;
-
-            // Dapatkan dan perbarui progres saat ini
-            await updateProgress();
+            const accounts = await web3.eth.getAccounts();
+            await contract.methods.buyTokens().send({
+                from: accounts[0],
+                value: web3.utils.toWei('0.0001', 'ether')
+            });
+            alert("Tokens bought successfully!");
+            await updateMintProgress(); // Memperbarui progres setelah pembelian
         } catch (error) {
-            if (error.code === 4902) {
-                status.textContent = "Please switch network to Base";
-                await addBaseNetwork();
-            } else {
-                status.textContent = "Error connecting to wallet: " + error.message;
-            }
+            console.error(error);
+            alert("Failed to buy tokens!");
         }
     } else {
-        status.textContent = "Please install MetaMask!";
+        alert("Please connect your wallet first!");
     }
 }
 
-// Menambahkan event listener ke tombol koneksi
-connectButton.addEventListener('click', connectWallet);
-
-// Sisanya dari kode JavaScript Anda tetap sama
-mintButton.addEventListener('click', async () => {
-    const amount = ethers.utils.parseUnits('1', 18); // Mengirim 1 token
-    const mintPrice = await contract.MINT_PRICE();
-    const totalCost = amount.mul(mintPrice);
-
-    try {
-        const tx = await contract.mint(amount, { value: totalCost });
-        status.textContent = "Transaction sent, waiting for confirmation...";
-        await tx.wait();
-        status.textContent = "Token minted successfully!";
-        await updateProgress();
-    } catch (error) {
-        status.textContent = "Error minting token: " + error.message;
-    }
-});
-
-async function updateProgress() {
-    const currentProgress = await contract.getProgress();
-    progress.style.width = `${currentProgress}%`;
-    percentage.textContent = `${currentProgress}%`;
-}
-
-async function switchToBaseNetwork() {
-    try {
-        await window.ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: baseNetwork.chainId }]
-        });
-        location.reload();
-    } catch (switchError) {
-        if (switchError.code === 4902) {
-            await addBaseNetwork();
-        } else {
-            status.textContent = "Failed to switch network: " + switchError.message;
-        }
-    }
-}
-
-async function addBaseNetwork() {
-    try {
-        await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [baseNetwork]
-        });
-        location.reload();
-    } catch (addError) {
-        status.textContent = "Failed to add network: " + addError.message;
-    }
-}
-    </script>
+document.getElementById('connect-wallet').addEventListener('click', connectWallet);
+document.getElementById('buy-tokens').addEventListener('click', buyTokens);</script>
 </body>
 </html>
