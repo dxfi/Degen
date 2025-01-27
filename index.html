@@ -168,7 +168,7 @@ progress::-moz-progress-bar {
 ];
 
 const minterContractAddress = 'YOUR_CONTRACT_ADDRESS_HERE'; // Replace with your contract address
-const MINT_PRICE = '0.0000735'; // Price in ETH for minting 1000 tokens
+const MINT_PRICE = '0.0001735'; // in ETH for minting 1000 tokens
 const BASE_CHAIN_ID = 8453; // Chain ID for Base Mainnet
 
 let web3;
@@ -215,7 +215,7 @@ async function switchToBaseNetwork() {
     try {
         await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: `0x${BASE_CHAIN_ID.toString(16)}` }],
+            params: [{ chainId: `8454` }],
         });
         await checkNetwork();
     } catch (switchError) {
@@ -224,8 +224,7 @@ async function switchToBaseNetwork() {
             try {
                 await window.ethereum.request({
                     method: 'wallet_addEthereumChain',
-                    params: [{
-                        chainId: `0x${BASE_CHAIN_ID.toString(16)}`,
+                    params: [{ chainId: `8453` }],
                         chainName: 'Base Mainnet',
                         nativeCurrency: {
                             name: 'Ether',
@@ -265,7 +264,7 @@ async function updateWalletInfo() {
 }
 
 async function mintTokens() {
-    const amountInWei = web3.utils.toWei(MINT_PRICE, 'ether');
+    const amountInWei = web3.utils.toWei(MINT_PRICE, '0.0001735');
     const progressBar = document.getElementById('progressBar');
     const progressText = document.getElementById('progressText');
 
