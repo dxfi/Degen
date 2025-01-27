@@ -175,18 +175,34 @@ let web3;
 let minterInstance;
 let currentAccount;
 
+// Fungsi untuk memeriksa jaringan dan memperbarui tampilan
+async function checkNetworkAndUpdateUI() {
+    if (web3) {
+        const chainId = await web3.eth.getChainId();
+        const networkSwitchElement = document.getElementById('networkSwitch');
+        const mintSectionElement = document.getElementById('mintSection');
+
+        if (chainId === BASE_CHAIN_ID) {
+            networkSwitchElement.style.display = 'none';
+            mintSectionElement.style.display = 'block';
+        } else {
+            networkSwitchElement.style.display = 'block';
+            mintSectionElement.style.display = 'none';
+        }
+    }
+}
+
 async function connectWallet() {
     if (window.ethereum) {
         try {
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
             web3 = new Web3(window.ethereum);
             currentAccount = accounts[0];
-            await checkNetwork();
+            await checkNetworkAndUpdateUI();
             initContract();
             updateWalletInfo();
             document.getElementById('connectWallet').style.display = 'none';
             document.getElementById('walletInfo').style.display = 'block';
-            document.getElementById('mintSection').style.display = 'block';
         } catch (error) {
             console.error("User denied account access");
         }
@@ -201,23 +217,13 @@ async function initContract() {
     }
 }
 
-async function checkNetwork() {
-    const chainId = await web3.eth.getChainId();
-    if (chainId !== BASE_CHAIN_ID) {
-        document.getElementById('networkSwitch').style.display = 'block';
-        document.getElementById('mintSection').style.display = 'none';
-    } else {
-        document.getElementById('networkSwitch').style.display = 'none';
-    }
-}
-
 async function switchToBaseNetwork() {
     try {
         await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
             params: [{ chainId: `0x${BASE_CHAIN_ID.toString(16)}` }],
         });
-        await checkNetwork();
+        await checkNetworkAndUpdateUI();
     } catch (switchError) {
         // This error code indicates that the chain has not been added to MetaMask.
         if (switchError.code === 4902) {
@@ -236,7 +242,7 @@ async function switchToBaseNetwork() {
                         blockExplorerUrls: ['https://basescan.org/']
                     }],
                 });
-                await checkNetwork();
+                await checkNetworkAndUpdateUI();
             } catch (addError) {
                 console.error(addError);
             }
@@ -312,11 +318,24 @@ function updateMintingProgress(txHash, progressBar, progressText) {
     }, 5000); // Update every 5 seconds
 }
 
+// Listen for network changes
+if (window.ethereum) {
+    window.ethereum.on('chainChanged', checkNetworkAndUpdateUI);
+    window.ethereum.on('accountsChanged', (accounts) => {
+        if (accounts.length === 0) {
+            disconnectWallet();
+        } else {
+            currentAccount = accounts[0];
+            connectWallet(); // This will update the UI
+        }
+    });
+}
+
 // Initialize Web3 when the page loads
 window.onload = () => {
     if (window.ethereum) {
         web3 = new Web3(window.ethereum);
-        checkNetwork();
+        checkNetworkAndUpdateUI();
     } else {
         console.log('Please install MetaMask!');
     }
