@@ -99,7 +99,8 @@ button:disabled {
         <div id="status"></div>
     </div>
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
-    <script>const connectButton = document.getElementById('connectButton');
+    <script>
+        const connectButton = document.getElementById('connectButton');
 const mintButton = document.getElementById('mintButton');
 const progress = document.getElementById('progress');
 const percentage = document.getElementById('percentage');
@@ -143,9 +144,14 @@ const baseNetwork = {
     blockExplorerUrls: ['https://basescan.org/']
 };
 
-connectButton.addEventListener('click', async () => {
+// Fungsi untuk menangani koneksi wallet
+async function connectWallet() {
     if (typeof window.ethereum !== 'undefined') {
         try {
+            // Memastikan kita menggunakan ethers dari window.ethers
+            if (!window.ethers) {
+                throw new Error("Ethers.js is not loaded correctly");
+            }
             await window.ethereum.request({ method: 'eth_requestAccounts' });
             provider = new ethers.providers.Web3Provider(window.ethereum);
             signer = provider.getSigner();
@@ -176,9 +182,12 @@ connectButton.addEventListener('click', async () => {
     } else {
         status.textContent = "Please install MetaMask!";
     }
-});
+}
 
-// Fungsi mint diubah untuk mengirim jumlah token yang telah ditentukan
+// Menambahkan event listener ke tombol koneksi
+connectButton.addEventListener('click', connectWallet);
+
+// Sisanya dari kode JavaScript Anda tetap sama
 mintButton.addEventListener('click', async () => {
     const amount = ethers.utils.parseUnits('1', 18); // Mengirim 1 token
     const mintPrice = await contract.MINT_PRICE();
@@ -227,6 +236,7 @@ async function addBaseNetwork() {
     } catch (addError) {
         status.textContent = "Failed to add network: " + addError.message;
     }
-}</script>
+}
+    </script>
 </body>
 </html>
