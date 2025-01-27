@@ -5,35 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DegenMint DApp</title>
     <link rel="stylesheet" href="styles.css">
-  <style>body {
-    font-family: Arial, sans-serif;
+    <style>body {
+    font-family: 'Roboto', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f0f0f0;
+    margin: 0;
+    background: #f5f5f5;
 }
 
 .container {
     text-align: center;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    width: 90%;
+    max-width: 400px;
+}
+
+h1 {
+    color: #333333;
+    font-size: 2em;
+    margin-bottom: 20px;
 }
 
 .progress-bar {
-    width: 200px;
+    width: 100%;
     height: 20px;
     background-color: #e0e0e0;
     margin: 20px auto;
     border-radius: 10px;
     position: relative;
+    overflow: hidden;
 }
 
 .progress {
     height: 100%;
-    background: #4CAF50;
+    background: linear-gradient(to right, #4CAF50, #2196F3);
     border-radius: 10px;
     transition: width 0.5s ease;
 }
@@ -43,26 +53,37 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: black;
+    color: white;
     font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
 }
 
 button {
-    margin: 10px;
-    padding: 10px 20px;
-    font-size: 16px;
+    margin: 15px 0;
+    padding: 15px 20px;
+    font-size: 1em;
     cursor: pointer;
+    width: 100%;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    background: #2196F3;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: background 0.3s ease;
 }
 
-input {
-    margin: 10px;
-    padding: 5px;
-    font-size: 16px;
+button:hover {
+    background: #1E88E5;
+}
+
+button:disabled {
+    background: #B0BEC5;
+    cursor: not-allowed;
 }
 
 #status {
     margin-top: 20px;
-    color: red; /* Menandai pesan status dengan warna yang lebih mencolok */
+    color: #F44336;
     font-weight: bold;
 }</style>
 </head>
@@ -74,14 +95,12 @@ input {
             <div id="percentage"></div>
         </div>
         <button id="connectButton">Connect Wallet</button>
-        <button id="mintButton" disabled>Mint Tokens</button>
-        <input type="number" id="mintAmount" placeholder="Amount to mint">
+        <button id="mintButton" disabled>Mint Token</button>
         <div id="status"></div>
     </div>
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" type="application/javascript"></script>
     <script>const connectButton = document.getElementById('connectButton');
 const mintButton = document.getElementById('mintButton');
-const mintAmount = document.getElementById('mintAmount');
 const progress = document.getElementById('progress');
 const percentage = document.getElementById('percentage');
 const status = document.getElementById('status');
@@ -113,7 +132,7 @@ const abi = [
 
 // Jaringan Base
 const baseNetwork = {
-    chainId: '0x2105', // ID jaringan Base
+    chainId: '0x2105',
     chainName: 'Base',
     nativeCurrency: {
         name: 'Ether',
@@ -134,9 +153,9 @@ connectButton.addEventListener('click', async () => {
             // Memeriksa apakah pengguna sudah di jaringan Base
             const { chainId } = await provider.getNetwork();
             if (chainId !== parseInt(baseNetwork.chainId, 16)) {
-                status.textContent = "alihkan jaringan ke base";
+                status.textContent = "Please switch network to Base";
                 await switchToBaseNetwork();
-                return; // Keluar dari fungsi jika berhasil beralih atau jika pengguna menolak
+                return;
             }
 
             contract = new ethers.Contract(contractAddress, abi, signer);
@@ -148,7 +167,7 @@ connectButton.addEventListener('click', async () => {
             await updateProgress();
         } catch (error) {
             if (error.code === 4902) {
-                status.textContent = "alihkan jaringan ke base";
+                status.textContent = "Please switch network to Base";
                 await addBaseNetwork();
             } else {
                 status.textContent = "Error connecting to wallet: " + error.message;
@@ -159,23 +178,20 @@ connectButton.addEventListener('click', async () => {
     }
 });
 
+// Fungsi mint diubah untuk mengirim jumlah token yang telah ditentukan
 mintButton.addEventListener('click', async () => {
-    if (mintAmount.value && !isNaN(mintAmount.value)) {
-        const amount = ethers.utils.parseUnits(mintAmount.value, 18);
-        const mintPrice = await contract.MINT_PRICE();
-        const totalCost = amount.mul(mintPrice);
+    const amount = ethers.utils.parseUnits('1', 18); // Mengirim 1 token
+    const mintPrice = await contract.MINT_PRICE();
+    const totalCost = amount.mul(mintPrice);
 
-        try {
-            const tx = await contract.mint(amount, { value: totalCost });
-            status.textContent = "Transaction sent, waiting for confirmation...";
-            await tx.wait();
-            status.textContent = "Tokens minted successfully!";
-            await updateProgress();
-        } catch (error) {
-            status.textContent = "Error minting tokens: " + error.message;
-        }
-    } else {
-        status.textContent = "Please enter a valid number for minting.";
+    try {
+        const tx = await contract.mint(amount, { value: totalCost });
+        status.textContent = "Transaction sent, waiting for confirmation...";
+        await tx.wait();
+        status.textContent = "Token minted successfully!";
+        await updateProgress();
+    } catch (error) {
+        status.textContent = "Error minting token: " + error.message;
     }
 });
 
@@ -191,10 +207,8 @@ async function switchToBaseNetwork() {
             method: 'wallet_switchEthereumChain',
             params: [{ chainId: baseNetwork.chainId }]
         });
-        // Jika berhasil beralih, refresh halaman untuk menginisialisasi ulang dengan jaringan baru
         location.reload();
     } catch (switchError) {
-        // Jaringan tidak terdaftar, maka tambahkan jaringan
         if (switchError.code === 4902) {
             await addBaseNetwork();
         } else {
@@ -209,7 +223,6 @@ async function addBaseNetwork() {
             method: 'wallet_addEthereumChain',
             params: [baseNetwork]
         });
-        // Jika berhasil menambahkan jaringan, refresh halaman untuk menginisialisasi ulang dengan jaringan baru
         location.reload();
     } catch (addError) {
         status.textContent = "Failed to add network: " + addError.message;
