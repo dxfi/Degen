@@ -230,29 +230,55 @@
         }
     }
 
-    // Memeriksa jaringan
-    async function checkNetwork() {
-        const chainId = await web3.eth.getChainId();
-        if (chainId !== 5611) {
-            toggleUI('wrongNetwork');
-        } else {
-            toggleUI('correctNetwork');
-        }
-    }
+    // ID untuk jaringan OPBNB Testnet
+const OPBNB_CHAIN_ID = 5611; // Ganti dengan ID yang sesuai untuk OPBNB Testnet
+const OPBNB_RPC_URL = "https://opbnb-testnet-rpc.bnbchain.org/"; // Ganti dengan URL RPC yang sesuai jika diperlukan
 
-    // Berpindah ke jaringan OPBNB Testnet
-    async function switchToOPBNBNetwork() {
-        try {
-            await window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: "0x15eb" }],
-            });
-            await checkNetwork();
-        } catch (error) {
-            console.error("Error switching network:", error.message);
-            alert(`Failed to switch network: ${error.message}`);
-        }
+// Memeriksa jaringan saat ini
+async function checkNetwork() {
+    const chainId = await web3.eth.getChainId();
+    if (chainId !== 5611) {
+        toggleUI('wrongNetwork'); // Menampilkan UI untuk memberi tahu user bahwa mereka berada di jaringan yang salah
+        recommendOPBNB(); // Menampilkan rekomendasi untuk menggunakan RPC OPBNB Testnet
+    } else {
+        toggleUI('correctNetwork'); // Menampilkan UI yang mengonfirmasi jaringan yang benar
     }
+}
+
+// Fungsi untuk merekomendasikan pengaturan RPC OPBNB Testnet
+function recommendOPBNB() {
+    alert("You are not connected to the OPBNB Testnet. Please add the OPBNB Testnet RPC.");
+}
+
+// Beralih ke jaringan OPBNB Testnet
+async function switchToOPBNBNetwork() {
+    try {
+        // Menambahkan jaringan OPBNB Testnet ke dompet jika belum ada
+        await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+                chainId: "0x15eb",// Menyusun chainId dalam format hexadecimal
+                chainName: "OPBNB Testnet",
+                rpcUrls: [https://opbnb-testnet-rpc.bnbchain.org/],
+                nativeCurrency: {
+                    name: "tBNB",
+                    symbol: "tBNB",
+                    decimals: 18
+                },
+                blockExplorerUrls: ["https://opbnb-testnet.bscscan.com/"]
+            }]);
+
+        // Setelah menambahkan jaringan, beralih ke jaringan OPBNB Testnet
+        await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: "0x15eb" }],
+
+        await checkNetwork(); // Memeriksa kembali jaringan setelah beralih
+    } catch (error) {
+        console.error("Error switching or adding network:", error.message);
+        alert("Error switching or adding network: " + error.message);
+    }
+}
 
     // Mint token
     async function mintTokens() {
