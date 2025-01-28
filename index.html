@@ -371,11 +371,19 @@ async function switchToOPBNBNetwork() {
         // Menambahkan penundaan kecil untuk memastikan jaringan sudah berhasil beralih
         setTimeout(async () => {
             await checkNetwork();  // Memeriksa kembali setelah berpindah jaringan
-        }, 1000); // Menunggu 1 detik (1000 ms) untuk memastikan jaringan beralih
+        }, 2000); // Menunggu 2 detik (2000 ms) untuk memastikan jaringan beralih
     } catch (error) {
         console.error("Error switching network:", error.message);
         alert(`Failed to switch network: ${error.message}`);
     }
+}
+
+// Event listener untuk mendeteksi perubahan jaringan setelah switch
+if (window.ethereum) {
+    window.ethereum.on('chainChanged', async (chainId) => {
+        console.log('Chain changed to:', chainId);
+        await checkNetwork();  // Memeriksa jaringan setelah perubahan chain
+    });
 }
     // Mint token
     async function mintTokens() {
