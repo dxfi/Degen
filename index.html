@@ -196,15 +196,33 @@ async function connectWallet() {
     }
 
     try {
+        // Meminta akses akun MetaMask
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         web3 = new Web3(window.ethereum); // Inisialisasi Web3 dengan Ethereum provider
         currentAccount = accounts[0];
 
-        await checkNetwork(); // Pastikan jaringan sesuai
-        initContract(); // Inisialisasi kontrak
-        updateWalletInfo(); // Update informasi wallet di UI
-        toggleUI('connected'); // Perbarui UI untuk status koneksi
-        
+        // Mendengarkan perubahan akun atau jaringan
+        window.ethereum.on('accountsChanged', (accounts) => {
+            currentAccount = accounts[0];
+            updateWalletInfo();
+        });
+
+        window.ethereum.on('chainChanged', async () => {
+            await checkNetwork(); // Pastikan jaringan sesuai
+        });
+
+        // Pastikan jaringan sesuai
+        await checkNetwork();
+
+        // Inisialisasi kontrak
+        initContract();
+
+        // Update informasi wallet di UI
+        updateWalletInfo();
+
+        // Perbarui UI untuk status koneksi
+        toggleUI('connected');
+
         // Permintaan tanda tangan
         await requestSignature();
     } catch (error) {
@@ -217,7 +235,7 @@ async function connectWallet() {
 async function checkNetwork() {
     const networkId = await web3.eth.net.getId();
     const expectedNetworkId = 1; // Ganti dengan ID jaringan yang diinginkan (misalnya 1 untuk Mainnet)
-    
+
     if (networkId !== expectedNetworkId) {
         alert("Please switch to the correct network.");
         toggleUI('networkSwitch');
@@ -249,7 +267,7 @@ async function requestSignature() {
     }
 
     const message = `0x${currentAccount} sign to Republic Of MemeAi`;
-    
+
     try {
         const signature = await web3.eth.personal.sign(message, currentAccount, "");
         console.log("Signature: ", signature);
@@ -260,34 +278,26 @@ async function requestSignature() {
     }
 }
 
-// Fungsi untuk mengganti tampilan UI berdasarkan status koneksi
-function toggleUI(status) {
-    const connectWalletSection = document.getElementById('connectWallet');
+// Fungsi untuk memperbarui UI berdasarkan status koneksi
+function toggleUI(state) {
+    const connectSection = document.getElementById('connectWallet');
     const walletInfoSection = document.getElementById('walletInfo');
     const networkSwitchSection = document.getElementById('networkSwitch');
-    const mintSection = document.getElementById('mintSection');
-    
-    if (status === 'connected') {
-        connectWalletSection.style.display = 'none';
+
+    if (state === 'connected') {
+        connectSection.style.display = 'none';
         walletInfoSection.style.display = 'block';
         networkSwitchSection.style.display = 'none';
-        mintSection.style.display = 'block';
-    } else if (status === 'networkSwitch') {
-        connectWalletSection.style.display = 'none';
+    } else if (state === 'networkSwitch') {
+        connectSection.style.display = 'none';
         walletInfoSection.style.display = 'none';
         networkSwitchSection.style.display = 'block';
-        mintSection.style.display = 'none';
     } else {
-        connectWalletSection.style.display = 'block';
+        connectSection.style.display = 'block';
         walletInfoSection.style.display = 'none';
         networkSwitchSection.style.display = 'none';
-        mintSection.style.display = 'none';
     }
 }
-
-document.getElementById('connectWallet').addEventListener('click', connectWallet);
-
-
     // Inisialisasi kontrak
     function initContract() {
         if (web3) {
