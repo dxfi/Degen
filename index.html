@@ -214,7 +214,7 @@
     // Memeriksa jaringan
     async function checkNetwork() {
         const chainId = await web3.eth.getChainId();
-        if (chainId !== OPBNB_CHAIN_ID) {
+        if (chainId !== 5611) {
             toggleUI('wrongNetwork');
         } else {
             toggleUI('correctNetwork');
