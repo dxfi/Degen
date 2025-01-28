@@ -174,186 +174,115 @@
             <span id="progressText">0%</span>
         </div>
         <div id="status"></div>
-     </section>
+    </section>
 
-        <script>
-            const minterContractABI = [
-                // Masukkan ABI kontrak Anda di sini
-            ];
+    <script>
+        const minterContractABI = [
+            [{"inputs":[{"internalType":"address payable","name":"_taxCollector","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"EtherWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokenBurned","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"taxPaid","type":"uint256"}],"name":"TokenMinted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"BURN_PERCENTAGE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"NET_TAX_PER_1000","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TOKENS_PER_MINT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"burn","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address payable","name":"newTaxCollector","type":"address"}],"name":"changeTaxCollector","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"mintToken","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"taxCollector","outputs":[{"internalType":"address payable","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawEther","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}]
+        ];
 
-            const minterContractAddress = 'YOUR_CONTRACT_ADDRESS_HERE'; // Ganti dengan alamat kontrak Anda
-            const MINT_PRICE = '0.0001735'; // Harga dalam tBNB untuk minting 1000 token
-            const OPBNB_CHAIN_ID = 5611; // Chain ID untuk OpBnb Testnet
+        const minterContractAddress = '0x01cA226f0D215F6877DF1D1C50791CdB0743e2e3'; // Replace with your contract address
+        const OPBNB_CHAIN_ID = 5611; // OPBNB Testnet Chain ID
 
-            let web3;
-            let minterInstance;
-            let currentAccount;
+        let web3;
+        let minterInstance;
+        let currentAccount;
 
-            async function connectWallet() {
-                if (window.ethereum) {
-                    try {
-                        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                        web3 = new Web3(window.ethereum);
-                        currentAccount = accounts[0];
-                        await checkNetwork();
-                        initContract();
-                        updateWalletInfo();
-                        toggleUI('connected');
-                        
-                        // Meminta tanda tangan setelah koneksi wallet
-                        const signature = await requestSignature(currentAccount);
-                        if (signature) {
-                            console.log("Signature:", signature);
-                            // Menyimpan atau mengirim signature ke server jika diperlukan
-                        }
-
-                    } catch (error) {
-                        console.error("User denied account access:", error.message);
-                        alert("Error connecting wallet: " + error.message);
-                    }
-                } else {
-                    alert('Non-Ethereum browser detected. Please install MetaMask!');
-                }
-            }
-
-            async function initContract() {
-                if (web3) {
-                    minterInstance = new web3.eth.Contract(minterContractABI, minterContractAddress);
-                } else {
-                    console.error("Web3 is not initialized.");
-                }
-            }
-
-            async function checkNetwork() {
-                const chainId = await web3.eth.getChainId();
-                if (chainId !== OPBNB_CHAIN_ID) {
-                    toggleUI('wrongNetwork');
-                } else {
-                    toggleUI('correctNetwork');
-                }
-            }
-
-            async function switchToOPBNBNetwork() {
+        async function connectWallet() {
+            if (window.ethereum) {
                 try {
-                    await window.ethereum.request({
-                        method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: `0x${OPBNB_CHAIN_ID.toString(16)}` }],
-                    });
-                    await checkNetwork();
-                } catch (switchError) {
-                    if (switchError.code === 4902) {
-                        // Jika jaringan OpBnb belum terpasang, menambahkan RPC untuk OpBnb Testnet
-                        try {
-                            await window.ethereum.request({
-                                method: 'wallet_addEthereumChain',
-                                params: [{
-                                    chainId: `0x${OPBNB_CHAIN_ID.toString(16)}`,
-                                    chainName: 'OpBnb Testnet',
-                                    nativeCurrency: {
-                                        name: 'tBNB',
-                                        symbol: 'tBNB',
-                                        decimals: 18
-                                    },
-                                    rpcUrls: ['https://opbnb-testnet-rpc.bnbchain.org'], // RPC URL untuk OpBnb Testnet
-                                    blockExplorerUrls: ['https://opbnb-testnet.bscscan.com/'] // Explorer URL untuk OpBnb Testnet
-                                }],
-                            });
-                            await checkNetwork();
-                        } catch (addError) {
-                            console.error("Error adding network:", addError.message);
-                        }
-                    } else {
-                        console.error("Error switching network:", switchError.message);
-                    }
-                }
-            }
-
-            async function disconnectWallet() {
-                currentAccount = null;
-                toggleUI('disconnected');
-            }
-
-            async function updateWalletInfo() {
-                if (currentAccount) {
-                    document.getElementById('walletAddress').innerText = currentAccount;
-                    const balance = await web3.eth.getBalance(currentAccount);
-                    const balanceInEth = web3.utils.fromWei(balance, 'ether');
-                    document.getElementById('ethBalance').innerText = `${balanceInEth} tBNB`;
-                }
-            }
-
-            async function mintTokens() {
-                const amountInWei = web3.utils.toWei(MINT_PRICE, 'ether');
-                try {
-                    document.getElementById('status').innerText = 'Minting in progress...';
-                    const transaction = await minterInstance.methods.mintToken().send({ 
-                        from: currentAccount, 
-                        value: amountInWei,
-                    });
-                    document.getElementById('status').innerText = '1000 Tokens minted successfully!';
-                    updateWalletInfo();
-                } catch (error) {
-                    document.getElementById('status').innerText = `Error minting tokens: ${error.message}`;
-                    console.error("Minting error:", error);
-                }
-            }
-
-            async function requestSignature(account) {
-                try {
-                    // Membuat pesan yang ingin ditandatangani
-                    const message = `${account} sign to Republic Of MemeAi`;
-
-                    // Menggunakan metode eth_sign untuk meminta tanda tangan
-                    const signature = await web3.eth.personal.sign(message, account, "");
-                    return signature;
-                } catch (error) {
-                    console.error("Error signing message:", error.message);
-                    return null;
-                }
-            }
-
-            function toggleUI(state) {
-                const connectWalletBtn = document.getElementById('connectWallet');
-                const walletInfo = document.getElementById('walletInfo');
-                const mintSection = document.getElementById('mintSection');
-                const networkSwitch = document.getElementById('networkSwitch');
-                const status = document.getElementById('status');
-
-                switch (state) {
-                    case 'connected':
-                        connectWalletBtn.style.display = 'none';
-                        walletInfo.style.display = 'block';
-                        mintSection.style.display = 'block';
-                        networkSwitch.style.display = 'none';
-                        break;
-                    case 'wrongNetwork':
-                        connectWalletBtn.style.display = 'none';
-                        walletInfo.style.display = 'block';
-                        mintSection.style.display = 'none';
-                        networkSwitch.style.display = 'block';
-                        status.innerText = 'Please switch to the OpBnb Testnet.';
-                        break;
-                    case 'correctNetwork':
-                        networkSwitch.style.display = 'none';
-                        mintSection.style.display = 'block';
-                        break;
-                    case 'disconnected':
-                        connectWalletBtn.style.display = 'block';
-                        walletInfo.style.display = 'none';
-                        mintSection.style.display = 'none';
-                        networkSwitch.style.display = 'none';
-                        break;
-                }
-            }
-
-            window.onload = () => {
-                if (window.ethereum) {
+                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                     web3 = new Web3(window.ethereum);
-                    checkNetwork();
-                } else {
-                    alert('Please install MetaMask!');
+                    currentAccount = accounts[0];
+                    await checkNetwork();
+                    initContract();
+                    updateWalletInfo();
+                    toggleUI('connected');
+                } catch (error) {
+                    console.error("User denied account access:", error.message);
+                    alert("Error connecting wallet: " + error.message);
                 }
+            } else {
+                alert('Non-Ethereum browser detected. Please install MetaMask!');
+            }
+        }
+
+        async function initContract() {
+            if (web3) {
+                minterInstance = new web3.eth.Contract(minterContractABI, minterContractAddress);
+            }
+        }
+
+        async function checkNetwork() {
+            const chainId = await web3.eth.getChainId();
+            if (chainId !== OPBNB_CHAIN_ID) {
+                toggleUI('wrongNetwork');
+            } else {
+                toggleUI('correctNetwork');
+            }
+        }
+
+        async function switchToOPBNBNetwork() {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: `0x${OPBNB_CHAIN_ID.toString(16)}` }],
+                });
+                await checkNetwork();
+            } catch (switchError) {
+                alert("Error switching network: " + switchError.message);
+            }
+        }
+
+        async function mintTokens() {
+            if (minterInstance && currentAccount) {
+                try {
+                    const mintPrice = web3.utils.toWei(MINT_PRICE, 'ether'); // Convert mint price to wei
+                    const result = await minterInstance.methods.mintToken().send({
+                        from: currentAccount,
+                        value: mintPrice,
+                    });
+
+                    console.log("Minting successful:", result);
+                    updateMintProgress(100);
+                    document.getElementById('status').textContent = "Minting successful!";
+                } catch (error) {
+                    console.error("Minting failed:", error);
+                    document.getElementById('status').textContent = "Minting failed. Try again.";
+                }
+            }
+        }
+
+        function updateMintProgress(progress) {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            progressBar.value = progress;
+            progressText.textContent = `${progress}%`;
+        }
+
+        function updateWalletInfo() {
+            document.getElementById('walletAddress').textContent = currentAccount;
+            // Fetch and display balance if needed
+        }
+
+        function toggleUI(state) {
+            const elements = {
+                connected: ['#walletInfo', '#mintSection'],
+                wrongNetwork: ['#networkSwitch'],
+                correctNetwork: ['#connectWallet', '#networkSwitch'],
             };
-        </script>
-    </body>
+
+            for (const [key, value] of Object.entries(elements)) {
+                value.forEach(id => document.querySelector(id).style.display = key === state ? 'block' : 'none');
+            }
+        }
+
+        function disconnectWallet() {
+            web3 = null;
+            currentAccount = null;
+            minterInstance = null;
+            toggleUI('disconnected');
+        }
+    </script>
+</body>
 </html>
