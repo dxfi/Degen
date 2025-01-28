@@ -387,10 +387,6 @@ async function checkNetwork() {
     console.log("Current chainId:", chainId); // Debug log untuk memeriksa chainId
 
     if (chainId !== 0x15eb) {  // ID hexadecimal untuk OPBNB Testnet
-        // Meminta pengguna untuk berpindah ke jaringan OPBNB Testnet
-        alert("You are not connected to OPBNB Testnet. Please switch to OPBNB Testnet.");
-            isAlertShown = true;  // Tandai bahwa alert sudah ditampilkan
-        }
         await switchToOPBNBNetwork();  // Arahkan untuk berpindah jaringan
     } else {
         toggleUI('correctNetwork');  // Menampilkan UI jika sudah di jaringan yang benar
