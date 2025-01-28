@@ -341,7 +341,7 @@
     // Memeriksa jaringan
     async function checkNetwork() {
         const chainId = await web3.eth.getChainId();
-        if (chainId !== 5611) {
+        if (chainId !== OPBNB_CHAIN_ID) {
             toggleUI('wrongNetwork');
         } else {
             toggleUI('correctNetwork');
@@ -353,7 +353,7 @@
         try {
             await window.ethereum.request({
                 method: 'wallet_switchEthereumChain',
-                params: [{ chainId: `0x15eb` }];
+                params: [{ chainId: `0x${OPBNB_CHAIN_ID.toString(16)}` }],
             });
             await checkNetwork();
         } catch (error) {
