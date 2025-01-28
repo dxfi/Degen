@@ -172,8 +172,8 @@ progress::-moz-progress-bar {
     <!-- Network Switch Section -->
     <section id="networkSwitch" style="display: none;">
         <h2>Wrong Network</h2>
-        <p>You are not connected to Base Mainnet. Please switch networks.</p>
-        <button onclick="switchToBaseNetwork()">Switch to Base Mainnet</button>
+        <p>You are not connected to OpBnb Testnet. Please switch networks.</p>
+        <button onclick="switchToOpBnbTestnetNetwork()">Switch to Base Mainnet</button>
     </section>
 
     <!-- Mint Section -->
@@ -188,13 +188,14 @@ progress::-moz-progress-bar {
         <div id="status"></div>
     </section>
 
-    <script>const minterContractABI = [
+    <script>
+        const minterContractABI = [
     // Masukkan ABI kontrak Anda di sini
 ];
 
 const minterContractAddress = 'YOUR_CONTRACT_ADDRESS_HERE'; // Ganti dengan alamat kontrak Anda
 const MINT_PRICE = '0.0000735'; // Harga dalam ETH untuk minting 1000 token
-const BASE_CHAIN_ID = 8453; // Chain ID untuk Base Mainnet
+const BASE_CHAIN_ID = 918; // Chain ID untuk OPNBN Testnet
 
 let web3;
 let minterInstance;
@@ -250,14 +251,14 @@ async function switchToBaseNetwork() {
                     method: 'wallet_addEthereumChain',
                     params: [{
                         chainId: `0x${BASE_CHAIN_ID.toString(16)}`,
-                        chainName: 'Base Mainnet',
+                        chainName: 'OPNBN Testnet',
                         nativeCurrency: {
-                            name: 'Ether',
-                            symbol: 'ETH',
+                            name: 'tBNB',
+                            symbol: 'tBNB',
                             decimals: 18
                         },
-                        rpcUrls: ['https://mainnet.base.org'],
-                        blockExplorerUrls: ['https://basescan.org/']
+                        rpcUrls: ['https://opbnb-testnet-rpc.bnbchain.org'],
+                        blockExplorerUrls: ['https://opbnbscan.com/']
                     }],
                 });
                 await checkNetwork();
@@ -280,7 +281,7 @@ async function updateWalletInfo() {
         document.getElementById('walletAddress').innerText = currentAccount;
         const balance = await web3.eth.getBalance(currentAccount);
         const balanceInEth = web3.utils.fromWei(balance, 'ether');
-        document.getElementById('ethBalance').innerText = `${balanceInEth} ETH`;
+        document.getElementById('ethBalance').innerText = `${balanceInEth} tBNB`;
     }
 }
 
@@ -319,7 +320,7 @@ function toggleUI(state) {
             walletInfo.style.display = 'block';
             mintSection.style.display = 'none';
             networkSwitch.style.display = 'block';
-            status.innerText = 'Please switch to the Base Mainnet.';
+            status.innerText = 'Please switch to the OPNBN Testnet.';
             break;
         case 'correctNetwork':
             networkSwitch.style.display = 'none';
@@ -341,6 +342,7 @@ window.onload = () => {
     } else {
         alert('Please install MetaMask!');
     }
-};</script>
+};
+    </script>
 </body>
 </html>
