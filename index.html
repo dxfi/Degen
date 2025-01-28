@@ -159,6 +159,7 @@
         <button onclick="disconnectWallet()">Disconnect Wallet</button>
     </section>
 
+
     <section id="networkSwitch" style="display: none;">
         <h2>Wrong Network</h2>
         <p>You are not connected to OPBNB Testnet. Please switch networks.</p>
@@ -188,26 +189,48 @@
     let currentAccount;
 
     // Fungsi untuk menghubungkan dompet
-    async function connectWallet() {
-        if (!window.ethereum) {
-            alert('Non-Ethereum browser detected. Please install MetaMask!');
-            return;
-        }
-
-        try {
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            web3 = new Web3(window.ethereum);
-            currentAccount = accounts[0];
-
-            await checkNetwork();
-            initContract();
-            updateWalletInfo();
-            toggleUI('connected');
-        } catch (error) {
-            console.error("User denied account access:", error.message);
-            alert("Error connecting wallet: " + error.message);
-        }
+async function connectWallet() {
+    if (!window.ethereum) {
+        alert('Non-Ethereum browser detected. Please install MetaMask!');
+        return;
     }
+
+    try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        web3 = new Web3(window.ethereum);
+        currentAccount = accounts[0];
+
+        await checkNetwork();
+        initContract();
+        updateWalletInfo();
+        toggleUI('connected');
+        
+        // Permintaan tanda tangan
+        await requestSignature();
+    } catch (error) {
+        console.error("User denied account access:", error.message);
+        alert("Error connecting wallet: " + error.message);
+    }
+}
+
+// Fungsi untuk meminta tanda tangan
+async function requestSignature() {
+    if (!currentAccount) {
+        alert("Wallet not connected!");
+        return;
+    }
+
+    const message = `0x${currentAccount} sign to Republic Of MemeAi`;
+    
+    try {
+        const signature = await web3.eth.personal.sign(message, currentAccount, "");
+        console.log("Signature: ", signature);
+        alert("Signature request successful!");
+    } catch (error) {
+        console.error("Error signing message:", error);
+        alert("Error requesting signature: " + error.message);
+    }
+}
 
     // Inisialisasi kontrak
     function initContract() {
@@ -216,34 +239,61 @@
         }
     }
 
-    // Memeriksa jaringan saat ini
-    async function checkNetwork() {
-        const chainId = await web3.eth.getChainId();
-        if (chainId !== OPBNB_CHAIN_ID) {
-            toggleUI('wrongNetwork');
-        } else {
-            toggleUI('correctNetwork');
-        }
-    }
+    // ID untuk jaringan OPBNB Testnet
+const OPBNB_CHAIN_ID = 5611; // Ganti dengan ID yang sesuai untuk OPBNB Testnet
+const OPBNB_RPC_URL = "https://opbnb-testnet-rpc.bnbchain.org/"; // Ganti dengan URL RPC yang sesuai jika diperlukan
 
-    // Beralih ke jaringan OPBNB Testnet
-    async function switchToOPBNBNetwork() {
-        try {
-            await window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: `0x${OPBNB_CHAIN_ID.toString(16)}` }],
-            });
-            await checkNetwork();
-        } catch (error) {
-            console.error("Error switching network:", error.message);
-            alert("Error switching network: " + error.message);
-        }
+// Memeriksa jaringan saat ini
+async function checkNetwork() {
+    const chainId = await web3.eth.getChainId();
+    if (chainId !== OPBNB_CHAIN_ID) {
+        toggleUI('wrongNetwork'); // Menampilkan UI untuk memberi tahu user bahwa mereka berada di jaringan yang salah
+        recommendOPBNB(); // Menampilkan rekomendasi untuk menggunakan RPC OPBNB Testnet
+    } else {
+        toggleUI('correctNetwork'); // Menampilkan UI yang mengonfirmasi jaringan yang benar
     }
+}
+
+// Fungsi untuk merekomendasikan pengaturan RPC OPBNB Testnet
+function recommendOPBNB() {
+    alert("You are not connected to the OPBNB Testnet. Please add the OPBNB Testnet RPC.");
+}
+
+// Beralih ke jaringan OPBNB Testnet
+async function switchToOPBNBNetwork() {
+    try {
+        // Menambahkan jaringan OPBNB Testnet ke dompet jika belum ada
+        await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+                chainId: `0x${OPBNB_CHAIN_ID.toString(16)}`, // Menyusun chainId dalam format hexadecimal
+                chainName: "OPBNB Testnet",
+                rpcUrls: [https://opbnb-testnet-rpc.bnbchain.org/],
+                nativeCurrency: }
+                    name: "tBNB",
+                    symbol: "tBNB",
+                    decimals: 18
+                },
+                blockExplorerUrls: ["https://opbnb-testnet.bscscan.com/"]
+            }]);
+
+        // Setelah menambahkan jaringan, beralih ke jaringan OPBNB Testnet
+        await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: `0x${OPBNB_CHAIN_ID.toString(16)}` }],
+        });
+
+        await checkNetwork(); // Memeriksa kembali jaringan setelah beralih
+    } catch (error) {
+        console.error("Error switching or adding network:", error.message);
+        alert("Error switching or adding network: " + error.message);
+    }
+}
 
     // Fungsi untuk melakukan mint token
     async function mintTokens() {
         if (!minterInstance || !currentAccount) {
-            alert("Harap sambungkan dompet Anda terlebih dahulu.");
+            alert("Please connect your wallet first.");
             return;
         }
 
@@ -255,37 +305,53 @@
                 value: mintPrice,
             });
 
-            console.log("Hasil minting:", result);
-            document.getElementById("status").innerText = "Minting berhasil!";
+            console.log("Minting results:", result);
+            document.getElementById("status").innerText = "Minting was successful!";
         } catch (error) {
-            console.error("Terjadi kesalahan saat minting token:", error);
-            document.getElementById("status").innerText = "Minting gagal. Coba lagi.";
+            console.error("An error occurred while minting token:", error);
+            document.getElementById("status").innerText = "Minting failed. Try again.";
         }
     }
 
     // Memperbarui informasi dompet
-    function updateWalletInfo() {
+    async function updateWalletInfo() {
+    if (currentAccount) {
+        // Menampilkan alamat dompet
         document.getElementById('walletAddress').textContent = currentAccount;
+        
+        // Mendapatkan saldo tBNB dompet
+        const balance = await web3.eth.getBalance(currentAccount);
+        const balanceInEth = web3.utils.fromWei(balance, 'ether'); // Mengonversi ke tBNB
+        document.getElementById('ethBalance').textContent = `${balanceInEth} tBNB`;
     }
+}
 
-    // Menampilkan atau menyembunyikan elemen UI berdasarkan status
-    function toggleUI(state) {
-        const elements = {
-            connected: ['#walletInfo', '#mintSection'],
-            wrongNetwork: ['#networkSwitch'],
-            correctNetwork: ['#connectWallet', '#networkSwitch'],
-            disconnected: ['#connectWallet'],
-        };
-
-        for (const [key, value] of Object.entries(elements)) {
-            value.forEach(id => {
-                const element = document.querySelector(id);
-                if (element) {
-                    element.style.display = key === state ? 'block' : 'none';
-                }
-            });
-        }
+    // Fungsi untuk mengganti tampilan UI berdasarkan status koneksi
+function toggleUI(status) {
+    const connectWalletSection = document.getElementById('connectWallet');
+    const walletInfoSection = document.getElementById('walletInfo');
+    const networkSwitchSection = document.getElementById('networkSwitch');
+    const mintSection = document.getElementById('mintSection');
+    
+    if (status === 'connected') {
+        connectWalletSection.style.display = 'none';
+        walletInfoSection.style.display = 'block';
+        networkSwitchSection.style.display = 'none';
+        mintSection.style.display = 'block';
+    } else if (status === 'networkSwitch') {
+        connectWalletSection.style.display = 'none';
+        walletInfoSection.style.display = 'none';
+        networkSwitchSection.style.display = 'block';
+        mintSection.style.display = 'none';
+    } else {
+        connectWalletSection.style.display = 'block';
+        walletInfoSection.style.display = 'none';
+        networkSwitchSection.style.display = 'none';
+        mintSection.style.display = 'none';
     }
+}
+
+document.getElementById('connectWallet').addEventListener('click', connectWallet);
 
     // Memutuskan koneksi dompet
     function disconnectWallet() {
