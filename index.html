@@ -96,42 +96,61 @@
     </style>
 
     <style>
-        #mintProgress {
-            width: 100%;
-            max-width: 300px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 1.5rem;
-        }
-        progress {
-            width: 100%;
-            height: 1rem;
-            border-radius: 8px;
-            appearance: none;
-            background-color: #e0e0e0;
-        }
-        progress::-webkit-progress-bar {
-            background-color: #e0e0e0;
-        }
-        progress::-webkit-progress-value {
-            background-color: #4caf50;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-        #progressText {
-            font-size: 0.9rem;
-            color: #333;
-            margin-top: 0.5rem;
-        }
-        #status {
-            margin-top: 1rem;
-            text-align: center;
-            font-weight: bold;
-            color: #4caf50;
-            text-shadow: 0 0 5px #4caf50;
-        }
-    </style>
+    #mintProgress {
+        width: 100%;
+        max-width: 300px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 1.5rem;
+    }
+
+    progress {
+        width: 100%;
+        height: 1rem;
+        border-radius: 12px;
+        appearance: none;
+        background: linear-gradient(145deg, #d1d1d1, #ffffff);
+        box-shadow: 4px 4px 10px #b3b3b3, -4px -4px 10px #ffffff;
+        overflow: hidden;
+        position: relative;
+    }
+
+    progress::-webkit-progress-bar {
+        background: linear-gradient(145deg, #d1d1d1, #ffffff);
+    }
+
+    progress::-webkit-progress-value {
+        background: linear-gradient(90deg, #4caf50, #8bc34a);
+        border-radius: 12px;
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        transition: width 0.4s ease, background-color 0.3s ease;
+    }
+
+    #progressText {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #555;
+        margin-top: 0.5rem;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    #status {
+        margin-top: 1rem;
+        text-align: center;
+        font-weight: bold;
+        color: #4caf50;
+        text-shadow: 0 0 10px rgba(76, 175, 80, 0.8), 0 0 15px rgba(76, 175, 80, 0.6);
+        font-size: 1.2rem;
+    }
+
+    /* Optional Hover Effect */
+    progress:hover::-webkit-progress-value {
+        background: linear-gradient(90deg, #8bc34a, #4caf50);
+        filter: brightness(1.1);
+    }
+</style>
+
     
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 </head>
