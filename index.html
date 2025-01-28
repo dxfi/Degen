@@ -82,52 +82,6 @@
             margin: 0.5rem 0;
         }
 
-        #mintProgress {
-            width: 100%;
-            max-width: 300px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 1.5rem;
-        }
-
-        progress {
-            width: 100%;
-            height: 1rem;
-            border-radius: var(--border-radius);
-            appearance: none;
-            background-color: var(--secondary-color);
-        }
-
-        progress::-webkit-progress-bar {
-            background-color: var(--secondary-color);
-        }
-
-        progress::-webkit-progress-value {
-            background-color: var(--primary-color);
-            border-radius: var(--border-radius);
-            transition: var(--transition);
-        }
-
-        progress::-moz-progress-bar {
-            background-color: var(--primary-color);
-            border-radius: var(--border-radius);
-        }
-
-        #progressText {
-            font-size: 0.9rem;
-            color: var(--text-color);
-            margin-top: 0.5rem;
-        }
-
-        #status {
-            margin-top: 1rem;
-            text-align: center;
-            font-weight: bold;
-            color: var(--primary-color);
-            text-shadow: 0 0 5px var(--primary-color);
-        }
-
         @media (max-width: 480px) {
             button {
                 width: 100%;
@@ -140,6 +94,45 @@
             }
         }
     </style>
+
+    <style>
+        #mintProgress {
+            width: 100%;
+            max-width: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
+        progress {
+            width: 100%;
+            height: 1rem;
+            border-radius: 8px;
+            appearance: none;
+            background-color: #e0e0e0;
+        }
+        progress::-webkit-progress-bar {
+            background-color: #e0e0e0;
+        }
+        progress::-webkit-progress-value {
+            background-color: #4caf50;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        #progressText {
+            font-size: 0.9rem;
+            color: #333;
+            margin-top: 0.5rem;
+        }
+        #status {
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: bold;
+            color: #4caf50;
+            text-shadow: 0 0 5px #4caf50;
+        }
+    </style>
+    
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 </head>
 <body>
@@ -171,10 +164,11 @@
         <p>Click the button below to mint 1000 tokens.</p>
         <button onclick="mintTokens()">Mint 1000 Tokens</button>
         <div id="mintProgress">
-            <progress id="progressBar" value="0" max="100">0%</progress>
-            <span id="progressText">0%</span>
+          <progress id="progressBar" value="0" max="100">0%</progress>
+          <span id="progressText">0%</span>
         </div>
         <div id="status"></div>
+
     </section>
 
     <script>
@@ -294,43 +288,45 @@
         minterInstance = null;
         toggleUI('disconnected');
     }
-</script>
+ <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script>
+        const provider = new ethers.providers.JsonRpcProvider("https://opbnb-testnet.infura.io/v3/370f6b9b5d1542ae828ad89d7566dbdf"); // Replace with your provider
+        const contractAddress = "0x01ca226f0d215f6877df1d1c50791cdb0743e2e3"; // Replace with your contract address
+        const contractABI = [{"inputs":[{"internalType":"address payable","name":"_taxCollector","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"EtherWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokenBurned","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"taxPaid","type":"uint256"}],"name":"TokenMinted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"BURN_PERCENTAGE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"NET_TAX_PER_1000","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TOKENS_PER_MINT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"burn","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address payable","name":"newTaxCollector","type":"address"}],"name":"changeTaxCollector","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"mintToken","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"taxCollector","outputs":[{"internalType":"address payable","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawEther","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 
-    <script>document.addEventListener('DOMContentLoaded', () => {
-    const progressBar = document.getElementById('progressBar');
-    const progressText = document.getElementById('progressText');
-    const statusText = document.getElementById('status');
+        const maxSupply = 1000000; // Replace with your contract's max supply
+        const progressBar = document.getElementById("progressBar");
+        const progressText = document.getElementById("progressText");
+        const status = document.getElementById("status");
 
-    /**
-     * Updates the progress bar dynamically.
-     * @param {number} percent - The current percentage of progress (0-100).
-     * @param {string} status - The status message to display.
-     */
-    function updateProgress(percent, status) {
-        // Ensure percent is between 0 and 100
-        percent = Math.max(0, Math.min(percent, 100));
+        async function fetchMintProgress() {
+            try {
+                const contract = new ethers.Contract(contractAddress, contractABI, provider);
+                const totalMinted = await contract.totalSupply(); // Replace with your contract's total supply method
+                const progressPercentage = (totalMinted / maxSupply) * 100;
 
-        // Update progress bar and text
-        progressBar.value = percent;
-        progressText.textContent = `${percent}%`;
+                // Update progress bar
+                progressBar.value = progressPercentage;
+                progressText.textContent = `${progressPercentage.toFixed(2)}%`;
 
-        // Update status message
-        statusText.textContent = status;
-    }
-
-    // Example usage of the updateProgress function
-    let currentProgress = 0;
-    const interval = setInterval(() => {
-        if (currentProgress <= 100) {
-            updateProgress(currentProgress, `Minting progress: ${currentProgress}%`);
-            currentProgress += 10;
-        } else {
-            clearInterval(interval);
-            statusText.textContent = 'Minting complete!';
+                // Update status
+                if (progressPercentage === 100) {
+                    status.textContent = "Minting Complete!";
+                } else {
+                    status.textContent = `Minting in Progress: ${totalMinted}/${maxSupply}`;
+                }
+            } catch (error) {
+                console.error("Error fetching mint progress:", error);
+                status.textContent = "Error fetching data!";
+            }
         }
-    }, 500); // Updates every 500ms
-});
-</script>
+
+        // Fetch progress on page load
+        fetchMintProgress();
+
+        // Optionally, refresh progress every 10 seconds
+        setInterval(fetchMintProgress, 10000);
+    </script>
 
 </body>
 </html>
