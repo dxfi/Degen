@@ -310,58 +310,67 @@
     let currentAccount;
 
     // Menghubungkan dompet pengguna
-    async function connectWallet() {
-        if (!window.ethereum) {
-            alert('Non-Ethereum browser detected. Please install MetaMask!');
-            return;
-        }
-
-        try {
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            web3 = new Web3(window.ethereum);
-            currentAccount = accounts[0];
-
-            await checkNetwork();
-            initContract();
-            updateWalletInfo();
-            toggleUI('connected');
-        } catch (error) {
-            console.error("Error connecting wallet:", error.message);
-            alert(`Failed to connect wallet: ${error.message}`);
-        }
+async function connectWallet() {
+    if (!window.ethereum) {
+        alert('Non-Ethereum browser detected. Please install MetaMask!');
+        return;
     }
 
-    // Inisialisasi kontrak
-    function initContract() {
-        if (web3) {
-            minterInstance = new web3.eth.Contract(minterContractABI, minterContractAddress);
-        }
-    }
+    try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        web3 = new Web3(window.ethereum);
+        currentAccount = accounts[0];
 
-    // Memeriksa jaringan
-    async function checkNetwork() {
-        const chainId = await web3.eth.getChainId();
-        if (chainId !==5611) {
-            toggleUI('wrongNetwork');
-        } else {
-            toggleUI('correctNetwork');
-        }
-    }
+        // Memeriksa jaringan yang digunakan oleh dompet
+        await checkNetwork();
 
-    // Berpindah ke jaringan OPBNB Testnet
-    async function switchToOPBNBNetwork() {
-        try {
-            await window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: `5611` }]
-            });
-            await checkNetwork();
-        } catch (error) {
-            console.error("Error switching network:", error.message);
-            alert(`Failed to switch network: ${error.message}`);
-        }
-    }
+        // Inisialisasi kontrak
+        initContract();
 
+        // Update informasi dompet
+        updateWalletInfo();
+
+        // Menampilkan UI jika berhasil terhubung
+        toggleUI('connected');
+    } catch (error) {
+        console.error("Error connecting wallet:", error.message);
+        alert(`Failed to connect wallet: ${error.message}`);
+    }
+}
+
+// Inisialisasi kontrak
+function initContract() {
+    if (web3) {
+        minterInstance = new web3.eth.Contract(minterContractABI, minterContractAddress);
+    }
+}
+
+// Memeriksa jaringan
+async function checkNetwork() {
+    const chainId = await web3.eth.getChainId();
+    if (chainId !== 5611) {  // Jika tidak di OPBNB Testnet
+        // Meminta pengguna untuk berpindah ke jaringan OPBNB Testnet
+        alert("You are not connected to OPBNB Testnet. Please switch to OPBNB Testnet.");
+        await switchToOPBNBNetwork();  // Arahkan untuk berpindah jaringan
+    } else {
+        toggleUI('correctNetwork');  // Menampilkan UI jika sudah di jaringan yang benar
+    }
+}
+
+// Berpindah ke jaringan OPBNB Testnet
+async function switchToOPBNBNetwork() {
+    try {
+        // Mencoba untuk beralih ke jaringan OPBNB Testnet
+        await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: `5611` }]  // ID jaringan OPBNB Testnet
+        });
+        await checkNetwork();  // Memeriksa kembali setelah berpindah jaringan
+    } catch (error) {
+        console.error("Error switching network:", error.message);
+        alert(`Failed to switch network: ${error.message}`);
+    }
+}
     // Mint token
     async function mintTokens() {
         if (!minterInstance || !currentAccount) {
