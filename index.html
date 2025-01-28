@@ -176,9 +176,10 @@
         </div>
         <div id="status"></div>
     </section>
-    
-<script>
-    const minterContractABI = [{"inputs":[{"internalType":"address payable","name":"_taxCollector","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"EtherWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokenBurned","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"taxPaid","type":"uint256"}],"name":"TokenMinted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"BURN_PERCENTAGE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"NET_TAX_PER_1000","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TOKENS_PER_MINT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"burn","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address payable","name":"newTaxCollector","type":"address"}],"name":"changeTaxCollector","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"mintToken","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"taxCollector","outputs":[{"internalType":"address payable","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawEther","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+
+    <script>
+    const minterContractABI =[{"inputs":[{"internalType":"address payable","name":"_taxCollector","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"EtherWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokenBurned","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"taxPaid","type":"uint256"}],"name":"TokenMinted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"BURN_PERCENTAGE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"NET_TAX_PER_1000","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TOKENS_PER_MINT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"burn","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address payable","name":"newTaxCollector","type":"address"}],"name":"changeTaxCollector","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"mintToken","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"taxCollector","outputs":[{"internalType":"address payable","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawEther","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+
     const minterContractAddress = '0x01cA226f0D215F6877DF1D1C50791CdB0743e2e3';
     const OPBNB_CHAIN_ID = 5611;
     const MINT_PRICE = '0.0001735';
@@ -187,6 +188,7 @@
     let minterInstance;
     let currentAccount;
 
+    // Menghubungkan dompet pengguna
     async function connectWallet() {
         if (!window.ethereum) {
             alert('Non-Ethereum browser detected. Please install MetaMask!');
@@ -195,67 +197,51 @@
 
         try {
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            web3 = new Web3(window.ethereum); 
+            web3 = new Web3(window.ethereum);
             currentAccount = accounts[0];
-
-            window.ethereum.on('accountsChanged', (accounts) => {
-                currentAccount = accounts[0];
-                updateWalletInfo();
-            });
-
-            window.ethereum.on('chainChanged', async () => {
-                await checkNetwork();
-            });
 
             await checkNetwork();
             initContract();
             updateWalletInfo();
             toggleUI('connected');
-            await requestSignature();
         } catch (error) {
-            console.error("User denied account access:", error.message);
-            alert("Error connecting wallet: " + error.message);
+            console.error("Error connecting wallet:", error.message);
+            alert(`Failed to connect wallet: ${error.message}`);
         }
     }
 
-    async function checkNetwork() {
-        const networkId = await web3.eth.net.getId();
-        const expectedNetworkId = 5611;
-
-        if (networkId !== expectedNetworkId) {
-            alert("Please switch to the correct network.");
-            toggleUI('networkSwitch');
-        } else {
-            toggleUI('connected');
-        }
-    }
-
+    // Inisialisasi kontrak
     function initContract() {
         if (web3) {
             minterInstance = new web3.eth.Contract(minterContractABI, minterContractAddress);
         }
     }
 
-    function toggleUI(state) {
-        const connectSection = document.getElementById('connectWallet');
-        const walletInfoSection = document.getElementById('walletInfo');
-        const networkSwitchSection = document.getElementById('networkSwitch');
-
-        if (state === 'connected') {
-            connectSection.style.display = 'none';
-            walletInfoSection.style.display = 'block';
-            networkSwitchSection.style.display = 'none';
-        } else if (state === 'networkSwitch') {
-            connectSection.style.display = 'none';
-            walletInfoSection.style.display = 'none';
-            networkSwitchSection.style.display = 'block';
+    // Memeriksa jaringan
+    async function checkNetwork() {
+        const chainId = await web3.eth.getChainId();
+        if (chainId !== OPBNB_CHAIN_ID) {
+            toggleUI('wrongNetwork');
         } else {
-            connectSection.style.display = 'block';
-            walletInfoSection.style.display = 'none';
-            networkSwitchSection.style.display = 'none';
+            toggleUI('correctNetwork');
         }
     }
 
+    // Berpindah ke jaringan OPBNB Testnet
+    async function switchToOPBNBNetwork() {
+        try {
+            await window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: `0x${OPBNB_CHAIN_ID.toString(16)}` }],
+            });
+            await checkNetwork();
+        } catch (error) {
+            console.error("Error switching network:", error.message);
+            alert(`Failed to switch network: ${error.message}`);
+        }
+    }
+
+    // Mint token
     async function mintTokens() {
         if (!minterInstance || !currentAccount) {
             alert("Please connect your wallet first.");
@@ -266,59 +252,50 @@
             const mintPrice = web3.utils.toWei(MINT_PRICE, 'ether');
             const result = await minterInstance.methods.mintToken().send({
                 from: currentAccount,
-                value:
-
- mintPrice
+                value: mintPrice,
             });
 
-            alert("Minting successful: " + result.transactionHash);
+            console.log("Minting result:", result);
+            document.getElementById("status").innerText = "Minting succeeded!";
         } catch (error) {
-            console.error(error);
-            alert("Minting failed: " + error.message);
+            console.error("Minting error:", error);
+            document.getElementById("status").innerText = "Minting failed. Please try again.";
         }
     }
 
+    // Update informasi dompet
     function updateWalletInfo() {
-        if (currentAccount) {
-            document.getElementById('walletAddress').innerText = currentAccount;
-        }
+        document.getElementById('walletAddress').textContent = currentAccount;
     }
 
-    async function requestSignature() {
-        const signature = await web3.eth.personal.sign("Please sign this message to authenticate.", currentAccount);
-        console.log(signature);
-    }
+    // Tampilkan atau sembunyikan elemen UI
+    function toggleUI(state) {
+        const uiState = {
+            connected: ['walletInfo', 'mintSection'],
+            wrongNetwork: ['networkSwitch'],
+            correctNetwork: ['connectWallet'],
+            disconnected: ['connectWallet'],
+        };
 
-    async function switchToOPBNBNetwork() {
-        try {
-            await window.ethereum.request({
-                method: 'wallet_addEthereumChain',
-                params: [{
-                    chainId: `0x${OPBNB_CHAIN_ID.toString(16)}`,
-                    chainName: 'OPBNB Testnet',
-                    rpcUrls: ["https://opbnb-testnet-rpc.bnbchain.org/"],
-                    nativeCurrency: {
-                        name: 'OPBNB',
-                        symbol: 'OPBNB',
-                        decimals: 18
-                    },
-                    blockExplorerUrls: ['https://testnet.bscscan.com/']
-                }]
+        for (const [key, elements] of Object.entries(uiState)) {
+            elements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.style.display = key === state ? 'block' : 'none';
+                }
             });
-        } catch (error) {
-            console.error("Error adding network:", error);
-            alert("Failed to switch network.");
         }
     }
 
-    window.addEventListener('load', function() {
-        if (window.ethereum) {
-            document.getElementById('connectWallet').style.display = 'block';
-        } else {
-            alert("Please install MetaMask.");
-        }
-    });
+    // Putuskan koneksi dompet
+    function disconnectWallet() {
+        web3 = null;
+        currentAccount = null;
+        minterInstance = null;
+        toggleUI('disconnected');
+    }
 </script>
+
 
 </body>
 </html>
