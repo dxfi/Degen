@@ -150,13 +150,14 @@ section h2 {
         <div id="status"></div>
     </section>
 
-    <script>const minterContractABI = [
+    <script>
+        const minterContractABI = [
     // Masukkan ABI kontrak Anda di sini
 ];
 
 const minterContractAddress = 'YOUR_CONTRACT_ADDRESS_HERE'; // Ganti dengan alamat kontrak Anda
 const MINT_PRICE = '0.0000735'; // Harga dalam tBNB untuk minting 1000 token
-const OPNBN_CHAIN_ID = 918; // Chain ID untuk OPNBN Testnet
+const OPNBN_CHAIN_ID = 918; // Chain ID untuk OpBnb Testnet
 
 let web3;
 let minterInstance;
@@ -206,7 +207,7 @@ async function checkNetwork() {
     }
 }
 
-async function switchToOPNBNNetwork() {
+async function switchToOPBNBNetwork() {
     try {
         await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
@@ -215,12 +216,13 @@ async function switchToOPNBNNetwork() {
         await checkNetwork();
     } catch (switchError) {
         if (switchError.code === 4902) {
+            // Jika jaringan OpBnb belum terpasang, menambahkan RPC untuk OpBnb Testnet
             try {
                 await window.ethereum.request({
                     method: 'wallet_addEthereumChain',
                     params: [{
                         chainId: `0x${OPNBN_CHAIN_ID.toString(16)}`,
-                        chainName: 'OPNBN Testnet',
+                        chainName: 'OpBnb Testnet',
                         nativeCurrency: {
                             name: 'tBNB',
                             symbol: 'tBNB',
@@ -303,7 +305,7 @@ function toggleUI(state) {
             walletInfo.style.display = 'block';
             mintSection.style.display = 'none';
             networkSwitch.style.display = 'block';
-            status.innerText = 'Please switch to the OPNBN Testnet.';
+            status.innerText = 'Please switch to the OpBnb Testnet.';
             break;
         case 'correctNetwork':
             networkSwitch.style.display = 'none';
@@ -325,6 +327,7 @@ window.onload = () => {
     } else {
         alert('Please install MetaMask!');
     }
-};</script>
+};
+    </script>
 </body>
 </html>
