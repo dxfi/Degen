@@ -193,7 +193,7 @@ progress::-moz-progress-bar {
     <section id="networkSwitch" style="display: none;">
         <h2>Wrong Network</h2>
         <p>You are not connected to OPNBN Testnet. Please switch networks.</p>
-        <button onclick="switchToOPNBNNetwork()">Switch to OPNBN Testnet</button>
+        <button id="switchToOPNBNButton">Switch to OPNBN Testnet</button>
     </section>
 
     <!-- Mint Section -->
@@ -286,8 +286,8 @@ async function switchToOPBNBNetwork() {
                             symbol: 'tBNB',
                             decimals: 18
                         },
-                        rpcUrls: ['https://opbnb-testnet-rpc.bnbchain.org'],
-                        blockExplorerUrls: ['https://opbnb-testnet.bscscan.com/']
+                        rpcUrls: ['https://opbnb-testnet-rpc.bnbchain.org'], // RPC URL untuk OpBnb Testnet
+                        blockExplorerUrls: ['https://opbnb-testnet.bscscan.com/'] // Explorer URL untuk OpBnb Testnet
                     }],
                 });
                 await checkNetwork();
