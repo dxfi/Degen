@@ -347,8 +347,6 @@ function initContract() {
     }
 }
 
-let isAlertShown = false;  // Flag untuk memastikan alert hanya muncul sekali
-
 // Menghubungkan dompet pengguna
 async function connectWallet() {
     if (!window.ethereum) {
@@ -388,12 +386,9 @@ function initContract() {
 // Memeriksa jaringan
 async function checkNetwork() {
     const chainId = await web3.eth.getChainId();
-    console.log("Current chainId:", chainId); // Debug log untuk memeriksa chainId
-
     if (chainId !== 0x15eb) {  // ID hexadecimal untuk OPBNB Testnet
-        if (!isAlertShown) {
-            // Meminta pengguna untuk berpindah ke jaringan OPBNB Testnet
-            alert("You are not connected to OPBNB Testnet. Please switch to OPBNB Testnet.");
+        // Meminta pengguna untuk berpindah ke jaringan OPBNB Testnet
+        alert("You are not connected to OPBNB Testnet. Please switch to OPBNB Testnet.");
             isAlertShown = true;  // Tandai bahwa alert sudah ditampilkan
         }
         await switchToOPBNBNetwork();  // Arahkan untuk berpindah jaringan
@@ -410,23 +405,11 @@ async function switchToOPBNBNetwork() {
             method: 'wallet_switchEthereumChain',
             params: [{ chainId: '0x15eb' }]  // ID jaringan OPBNB Testnet dalam format hexadecimal
         });
-
-        // Menambahkan penundaan kecil untuk memastikan jaringan sudah berhasil beralih
-        setTimeout(async () => {
-            await checkNetwork();  // Memeriksa kembali setelah berpindah jaringan
-        }, 2000); // Menunggu 2 detik (2000 ms) untuk memastikan jaringan beralih
+        await checkNetwork();  // Memeriksa kembali setelah berpindah jaringan
     } catch (error) {
         console.error("Error switching network:", error.message);
         alert(`Failed to switch network: ${error.message}`);
     }
-}
-
-// Event listener untuk mendeteksi perubahan jaringan setelah switch
-if (window.ethereum) {
-    window.ethereum.on('chainChanged', async (chainId) => {
-        console.log('Chain changed to:', chainId);
-        await checkNetwork();  // Memeriksa jaringan setelah perubahan chain
-    });
 }
     // Mint token
     async function mintTokens() {
