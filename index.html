@@ -192,8 +192,8 @@ progress::-moz-progress-bar {
     <!-- Network Switch Section -->
     <section id="networkSwitch" style="display: none;">
         <h2>Wrong Network</h2>
-        <p>You are not connected to OPNBN Testnet. Please switch networks.</p>
-        <button id="switchToOPNBNButton">Switch to OPNBN Testnet</button>
+        <p>You are not connected to OPBNB Testnet. Please switch networks.</p>
+        <button id="switchToOPBNButton">Switch to OPBNB Testnet</button>
     </section>
 
     <!-- Mint Section -->
@@ -258,7 +258,7 @@ async function initContract() {
 
 async function checkNetwork() {
     const chainId = await web3.eth.getChainId();
-    if (chainId !== OPNBN_CHAIN_ID) {
+    if (chainId !== OPBNB_CHAIN_ID) {
         toggleUI('wrongNetwork');
     } else {
         toggleUI('correctNetwork');
@@ -269,7 +269,7 @@ async function switchToOPBNBNetwork() {
     try {
         await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: `0x${OPNBN_CHAIN_ID.toString(16)}` }],
+            params: [{ chainId: `0x${OPBNB_CHAIN_ID.toString(16)}` }],
         });
         await checkNetwork();
     } catch (switchError) {
@@ -279,7 +279,7 @@ async function switchToOPBNBNetwork() {
                 await window.ethereum.request({
                     method: 'wallet_addEthereumChain',
                     params: [{
-                        chainId: `0x${OPNBN_CHAIN_ID.toString(16)}`,
+                        chainId: `0x${OPBNB_CHAIN_ID.toString(16)}`,
                         chainName: 'OpBnb Testnet',
                         nativeCurrency: {
                             name: 'tBNB',
