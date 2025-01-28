@@ -150,6 +150,181 @@ section h2 {
         <div id="status"></div>
     </section>
 
-    <script src="mint.js"></script>
+    <script>const minterContractABI = [
+    // Masukkan ABI kontrak Anda di sini
+];
+
+const minterContractAddress = 'YOUR_CONTRACT_ADDRESS_HERE'; // Ganti dengan alamat kontrak Anda
+const MINT_PRICE = '0.0000735'; // Harga dalam tBNB untuk minting 1000 token
+const OPNBN_CHAIN_ID = 918; // Chain ID untuk OPNBN Testnet
+
+let web3;
+let minterInstance;
+let currentAccount;
+
+async function connectWallet() {
+    if (window.ethereum) {
+        try {
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            web3 = new Web3(window.ethereum);
+            currentAccount = accounts[0];
+            await checkNetwork();
+            initContract();
+            updateWalletInfo();
+            toggleUI('connected');
+            
+            // Meminta tanda tangan setelah koneksi wallet
+            const signature = await requestSignature(currentAccount);
+            if (signature) {
+                console.log("Signature:", signature);
+                // Menyimpan atau mengirim signature ke server jika diperlukan
+            }
+
+        } catch (error) {
+            console.error("User denied account access:", error.message);
+            alert("Error connecting wallet: " + error.message);
+        }
+    } else {
+        alert('Non-Ethereum browser detected. Please install MetaMask!');
+    }
+}
+
+async function initContract() {
+    if (web3) {
+        minterInstance = new web3.eth.Contract(minterContractABI, minterContractAddress);
+    } else {
+        console.error("Web3 is not initialized.");
+    }
+}
+
+async function checkNetwork() {
+    const chainId = await web3.eth.getChainId();
+    if (chainId !== OPNBN_CHAIN_ID) {
+        toggleUI('wrongNetwork');
+    } else {
+        toggleUI('correctNetwork');
+    }
+}
+
+async function switchToOPNBNNetwork() {
+    try {
+        await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: `0x${OPNBN_CHAIN_ID.toString(16)}` }],
+        });
+        await checkNetwork();
+    } catch (switchError) {
+        if (switchError.code === 4902) {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{
+                        chainId: `0x${OPNBN_CHAIN_ID.toString(16)}`,
+                        chainName: 'OPNBN Testnet',
+                        nativeCurrency: {
+                            name: 'tBNB',
+                            symbol: 'tBNB',
+                            decimals: 18
+                        },
+                        rpcUrls: ['https://opbnb-testnet-rpc.bnbchain.org'],
+                        blockExplorerUrls: ['https://opbnbscan.com/']
+                    }],
+                });
+                await checkNetwork();
+            } catch (addError) {
+                console.error("Error adding network:", addError.message);
+            }
+        } else {
+            console.error("Error switching network:", switchError.message);
+        }
+    }
+}
+
+async function disconnectWallet() {
+    currentAccount = null;
+    toggleUI('disconnected');
+}
+
+async function updateWalletInfo() {
+    if (currentAccount) {
+        document.getElementById('walletAddress').innerText = currentAccount;
+        const balance = await web3.eth.getBalance(currentAccount);
+        const balanceInEth = web3.utils.fromWei(balance, 'ether');
+        document.getElementById('ethBalance').innerText = `${balanceInEth} tBNB`;
+    }
+}
+
+async function mintTokens() {
+    const amountInWei = web3.utils.toWei(MINT_PRICE, 'ether');
+    try {
+        document.getElementById('status').innerText = 'Minting in progress...';
+        const transaction = await minterInstance.methods.mintToken().send({ 
+            from: currentAccount, 
+            value: amountInWei,
+        });
+        document.getElementById('status').innerText = '1000 Tokens minted successfully!';
+        updateWalletInfo();
+    } catch (error) {
+        document.getElementById('status').innerText = `Error minting tokens: ${error.message}`;
+        console.error("Minting error:", error);
+    }
+}
+
+async function requestSignature(account) {
+    try {
+        // Membuat pesan yang ingin ditandatangani
+        const message = `${account} sign to Republic Of MemeAi`;
+
+        // Menggunakan metode eth_sign untuk meminta tanda tangan
+        const signature = await web3.eth.personal.sign(message, account, "");
+        return signature;
+    } catch (error) {
+        console.error("Error signing message:", error.message);
+        return null;
+    }
+}
+
+function toggleUI(state) {
+    const connectWalletBtn = document.getElementById('connectWallet');
+    const walletInfo = document.getElementById('walletInfo');
+    const mintSection = document.getElementById('mintSection');
+    const networkSwitch = document.getElementById('networkSwitch');
+    const status = document.getElementById('status');
+
+    switch (state) {
+        case 'connected':
+            connectWalletBtn.style.display = 'none';
+            walletInfo.style.display = 'block';
+            mintSection.style.display = 'block';
+            networkSwitch.style.display = 'none';
+            break;
+        case 'wrongNetwork':
+            connectWalletBtn.style.display = 'none';
+            walletInfo.style.display = 'block';
+            mintSection.style.display = 'none';
+            networkSwitch.style.display = 'block';
+            status.innerText = 'Please switch to the OPNBN Testnet.';
+            break;
+        case 'correctNetwork':
+            networkSwitch.style.display = 'none';
+            mintSection.style.display = 'block';
+            break;
+        case 'disconnected':
+            connectWalletBtn.style.display = 'block';
+            walletInfo.style.display = 'none';
+            mintSection.style.display = 'none';
+            networkSwitch.style.display = 'none';
+            break;
+    }
+}
+
+window.onload = () => {
+    if (window.ethereum) {
+        web3 = new Web3(window.ethereum);
+        checkNetwork();
+    } else {
+        alert('Please install MetaMask!');
+    }
+};</script>
 </body>
 </html>
