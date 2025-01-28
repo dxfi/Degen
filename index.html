@@ -348,7 +348,7 @@ function initContract() {
 // Memeriksa jaringan
 async function checkNetwork() {
     const chainId = await web3.eth.getChainId();
-    if (chainId !== 5611) {  // Jika tidak di OPBNB Testnet
+    if (chainId !== 0x15eb) {  // ID hexadecimal untuk OPBNB Testnet
         // Meminta pengguna untuk berpindah ke jaringan OPBNB Testnet
         alert("You are not connected to OPBNB Testnet. Please switch to OPBNB Testnet.");
         await switchToOPBNBNetwork();  // Arahkan untuk berpindah jaringan
@@ -360,10 +360,10 @@ async function checkNetwork() {
 // Berpindah ke jaringan OPBNB Testnet
 async function switchToOPBNBNetwork() {
     try {
-        // Mencoba untuk beralih ke jaringan OPBNB Testnet
+        // Mencoba untuk beralih ke jaringan OPBNB Testnet menggunakan format hexadecimal
         await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: `5611` }]  // ID jaringan OPBNB Testnet
+            params: [{ chainId: '0x15eb' }]  // ID jaringan OPBNB Testnet dalam format hexadecimal
         });
         await checkNetwork();  // Memeriksa kembali setelah berpindah jaringan
     } catch (error) {
