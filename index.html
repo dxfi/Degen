@@ -276,10 +276,18 @@
         }
     }
 
-    // Update informasi dompet
-    function updateWalletInfo() {
-        document.getElementById('walletAddress').textContent = currentAccount;
-    }
+    // Update wallet information, including wallet address and balance
+async function updateWalletInfo() {
+    // Menampilkan alamat wallet
+    document.getElementById('walletAddress').textContent = currentAccount;
+
+    // Mengambil saldo tBNB
+    const balance = await web3.eth.getBalance(currentAccount);
+
+    // Menampilkan saldo dalam format yang lebih mudah dibaca (misalnya dalam BNB)
+    const balanceInBNB = web3.utils.fromWei(balance, 'ether'); // Mengonversi dari Wei ke Ether/BNB
+    document.getElementById('ethBalance').textContent = balanceInBNB + " tBNB";
+}
 
     // Tampilkan atau sembunyikan elemen UI
     function toggleUI(state) {
