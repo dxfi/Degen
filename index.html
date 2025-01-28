@@ -8,165 +8,137 @@
     <link rel="stylesheet" href="styles.css">
     <style>
         :root {
-  --primary-color: #00d4ff; /* Warna biru neon cerah */
-  --secondary-color: #1f2937; /* Warna abu gelap */
-  --text-color: #ffffff; /* Warna teks putih */
-  --bg-color: #0d1117; /* Warna latar belakang hitam cerah */
-  --accent-color: #ff007a; /* Warna aksen merah muda neon */
-  --border-radius: 1rem;
-  --transition: all 0.4s ease;
-  --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
+            --primary-color: #00d4ff; 
+            --secondary-color: #1f2937;
+            --text-color: #ffffff;
+            --bg-color: #0d1117;
+            --accent-color: #ff007a;
+            --border-radius: 1rem;
+            --transition: all 0.4s ease;
+            --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
 
-* {
-  box-sizing: border-box;
-}
+        * {
+            box-sizing: border-box;
+        }
 
-body {
-  font-family: 'Poppins', Arial, sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  margin: 0;
-  padding: 2rem;
-  box-sizing: border-box;
-  overflow: hidden;
-}
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
 
-/* Animasi latar belakang */
-body::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255, 0, 122, 0.3), transparent 60%);
-  animation: backgroundGlow 5s infinite alternate;
-  z-index: -1;
-}
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            text-align: center;
+            font-size: 2.5rem;
+            text-shadow: 0 0 8px var(--primary-color);
+        }
 
-@keyframes backgroundGlow {
-  0% {
-    transform: translate(-50%, -50%) scale(1);
-  }
-  100% {
-    transform: translate(-40%, -40%) scale(1.5);
-  }
-}
+        button {
+            background: linear-gradient(145deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--box-shadow);
+        }
 
-h1 {
-  color: var(--primary-color);
-  margin-bottom: 2rem;
-  text-align: center;
-  font-size: 2.5rem;
-  text-shadow: 0 0 8px var(--primary-color);
-}
+        button:hover {
+            background: linear-gradient(145deg, var(--accent-color), var(--primary-color));
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.5);
+        }
 
-button {
-  background: linear-gradient(145deg, var(--primary-color), var(--accent-color));
-  color: white;
-  border: none;
-  padding: 1rem 2.5rem;
-  font-size: 1rem;
-  font-weight: bold;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  transition: var(--transition);
-  box-shadow: var(--box-shadow);
-}
+        #walletInfo, #connectWallet, #mintSection, #networkSwitch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: var(--secondary-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
 
-button:hover {
-  background: linear-gradient(145deg, var(--accent-color), var(--primary-color));
-  transform: scale(1.05);
-  box-shadow: 0 8px 25px rgba(0, 212, 255, 0.5);
-}
+        #walletInfo p, #networkSwitch p {
+            text-align: center;
+            margin: 0.5rem 0;
+        }
 
-#walletInfo, #connectWallet, #mintSection, #networkSwitch {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 400px;
-  margin-bottom: 1.5rem;
-  padding: 1rem;
-  background: var(--secondary-color);
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  animation: fadeIn 0.5s ease-out;
-}
+        #mintProgress {
+            width: 100%;
+            max-width: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
 
-#walletInfo p, #networkSwitch p {
-  text-align: center;
-  margin: 0.5rem 0;
-}
+        progress {
+            width: 100%;
+            height: 1rem;
+            border-radius: var(--border-radius);
+            appearance: none;
+            background-color: var(--secondary-color);
+        }
 
-#mintProgress {
-  width: 100%;
-  max-width: 300px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 1.5rem;
-}
+        progress::-webkit-progress-bar {
+            background-color: var(--secondary-color);
+        }
 
-progress {
-  width: 100%;
-  height: 1rem;
-  border-radius: var(--border-radius);
-  appearance: none;
-  background-color: var(--secondary-color);
-}
+        progress::-webkit-progress-value {
+            background-color: var(--primary-color);
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
 
-progress::-webkit-progress-bar {
-  background-color: var(--secondary-color);
-}
+        progress::-moz-progress-bar {
+            background-color: var(--primary-color);
+            border-radius: var(--border-radius);
+        }
 
-progress::-webkit-progress-value {
-  background-color: var(--primary-color);
-  border-radius: var(--border-radius);
-  transition: var(--transition);
-}
+        #progressText {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            margin-top: 0.5rem;
+        }
 
-progress::-moz-progress-bar {
-  background-color: var(--primary-color);
-  border-radius: var(--border-radius);
-}
+        #status {
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-shadow: 0 0 5px var(--primary-color);
+        }
 
-#progressText {
-  font-size: 0.9rem;
-  color: var(--text-color);
-  margin-top: 0.5rem;
-}
+        @media (max-width: 480px) {
+            button {
+                width: 100%;
+            }
+        }
 
-#status {
-  margin-top: 1rem;
-  text-align: center;
-  font-weight: bold;
-  color: var(--primary-color);
-  text-shadow: 0 0 5px var(--primary-color);
-}
-
-/* Responsive design */
-@media (max-width: 480px) {
-  button {
-    width: 100%;
-  }
-}
-
-@media (max-width: 768px) {
-  h1 {
-    font-size: 2rem;
-  }
-
-  body::before {
-    animation: backgroundGlow 3s infinite alternate;
-  }
-}
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 </head>
@@ -176,12 +148,10 @@ progress::-moz-progress-bar {
         <p>Connect your wallet and mint tokens easily!</p>
     </header>
 
-    <!-- Connect Wallet Section -->
     <section id="connectWallet">
         <button onclick="connectWallet()">Connect Wallet</button>
     </section>
 
-    <!-- Wallet Info Section -->
     <section id="walletInfo" style="display: none;">
         <h2>Wallet Information</h2>
         <p><strong>Wallet Address:</strong> <span id="walletAddress"></span></p>
@@ -189,14 +159,12 @@ progress::-moz-progress-bar {
         <button onclick="disconnectWallet()">Disconnect Wallet</button>
     </section>
 
-    <!-- Network Switch Section -->
     <section id="networkSwitch" style="display: none;">
         <h2>Wrong Network</h2>
         <p>You are not connected to OPBNB Testnet. Please switch networks.</p>
-        <button id="switchToOPBNButton">Switch to OPBNB Testnet</button>
+        <button id="switchToOPBNButton" onclick="switchToOPBNBNetwork()">Switch to OPBNB Testnet</button>
     </section>
 
-    <!-- Mint Section -->
     <section id="mintSection" style="display: none;">
         <h2>Mint Tokens</h2>
         <p>Click the button below to mint 1000 tokens.</p>
@@ -206,186 +174,186 @@ progress::-moz-progress-bar {
             <span id="progressText">0%</span>
         </div>
         <div id="status"></div>
-    </section>
+     </section>
 
-    <script>
-        const minterContractABI = [
-    // Masukkan ABI kontrak Anda di sini
-];
+        <script>
+            const minterContractABI = [
+                // Masukkan ABI kontrak Anda di sini
+            ];
 
-const minterContractAddress = 'YOUR_CONTRACT_ADDRESS_HERE'; // Ganti dengan alamat kontrak Anda
-const MINT_PRICE = '0.0000735'; // Harga dalam tBNB untuk minting 1000 token
-const OPNBN_CHAIN_ID = 5611; // Chain ID untuk OpBnb Testnet
+            const minterContractAddress = 'YOUR_CONTRACT_ADDRESS_HERE'; // Ganti dengan alamat kontrak Anda
+            const MINT_PRICE = '0.0000735'; // Harga dalam tBNB untuk minting 1000 token
+            const OPNBN_CHAIN_ID = 5611; // Chain ID untuk OpBnb Testnet
 
-let web3;
-let minterInstance;
-let currentAccount;
+            let web3;
+            let minterInstance;
+            let currentAccount;
 
-async function connectWallet() {
-    if (window.ethereum) {
-        try {
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            web3 = new Web3(window.ethereum);
-            currentAccount = accounts[0];
-            await checkNetwork();
-            initContract();
-            updateWalletInfo();
-            toggleUI('connected');
-            
-            // Meminta tanda tangan setelah koneksi wallet
-            const signature = await requestSignature(currentAccount);
-            if (signature) {
-                console.log("Signature:", signature);
-                // Menyimpan atau mengirim signature ke server jika diperlukan
+            async function connectWallet() {
+                if (window.ethereum) {
+                    try {
+                        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                        web3 = new Web3(window.ethereum);
+                        currentAccount = accounts[0];
+                        await checkNetwork();
+                        initContract();
+                        updateWalletInfo();
+                        toggleUI('connected');
+                        
+                        // Meminta tanda tangan setelah koneksi wallet
+                        const signature = await requestSignature(currentAccount);
+                        if (signature) {
+                            console.log("Signature:", signature);
+                            // Menyimpan atau mengirim signature ke server jika diperlukan
+                        }
+
+                    } catch (error) {
+                        console.error("User denied account access:", error.message);
+                        alert("Error connecting wallet: " + error.message);
+                    }
+                } else {
+                    alert('Non-Ethereum browser detected. Please install MetaMask!');
+                }
             }
 
-        } catch (error) {
-            console.error("User denied account access:", error.message);
-            alert("Error connecting wallet: " + error.message);
-        }
-    } else {
-        alert('Non-Ethereum browser detected. Please install MetaMask!');
-    }
-}
-
-async function initContract() {
-    if (web3) {
-        minterInstance = new web3.eth.Contract(minterContractABI, minterContractAddress);
-    } else {
-        console.error("Web3 is not initialized.");
-    }
-}
-
-async function checkNetwork() {
-    const chainId = await web3.eth.getChainId();
-    if (chainId !== OPBNB_CHAIN_ID) {
-        toggleUI('wrongNetwork');
-    } else {
-        toggleUI('correctNetwork');
-    }
-}
-
-async function switchToOPBNBNetwork() {
-    try {
-        await window.ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: `0x${OPBNB_CHAIN_ID.toString(16)}` }],
-        });
-        await checkNetwork();
-    } catch (switchError) {
-        if (switchError.code === 4902) {
-            // Jika jaringan OpBnb belum terpasang, menambahkan RPC untuk OpBnb Testnet
-            try {
-                await window.ethereum.request({
-                    method: 'wallet_addEthereumChain',
-                    params: [{
-                        chainId: `0x${OPBNB_CHAIN_ID.toString(16)}`,
-                        chainName: 'OpBnb Testnet',
-                        nativeCurrency: {
-                            name: 'tBNB',
-                            symbol: 'tBNB',
-                            decimals: 18
-                        },
-                        rpcUrls: ['https://opbnb-testnet-rpc.bnbchain.org'], // RPC URL untuk OpBnb Testnet
-                        blockExplorerUrls: ['https://opbnb-testnet.bscscan.com/'] // Explorer URL untuk OpBnb Testnet
-                    }],
-                });
-                await checkNetwork();
-            } catch (addError) {
-                console.error("Error adding network:", addError.message);
+            async function initContract() {
+                if (web3) {
+                    minterInstance = new web3.eth.Contract(minterContractABI, minterContractAddress);
+                } else {
+                    console.error("Web3 is not initialized.");
+                }
             }
-        } else {
-            console.error("Error switching network:", switchError.message);
-        }
-    }
-}
 
-async function disconnectWallet() {
-    currentAccount = null;
-    toggleUI('disconnected');
-}
+            async function checkNetwork() {
+                const chainId = await web3.eth.getChainId();
+                if (chainId !== OPBNB_CHAIN_ID) {
+                    toggleUI('wrongNetwork');
+                } else {
+                    toggleUI('correctNetwork');
+                }
+            }
 
-async function updateWalletInfo() {
-    if (currentAccount) {
-        document.getElementById('walletAddress').innerText = currentAccount;
-        const balance = await web3.eth.getBalance(currentAccount);
-        const balanceInEth = web3.utils.fromWei(balance, 'ether');
-        document.getElementById('ethBalance').innerText = `${balanceInEth} tBNB`;
-    }
-}
+            async function switchToOPBNBNetwork() {
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: `0x${OPBNB_CHAIN_ID.toString(16)}` }],
+                    });
+                    await checkNetwork();
+                } catch (switchError) {
+                    if (switchError.code === 4902) {
+                        // Jika jaringan OpBnb belum terpasang, menambahkan RPC untuk OpBnb Testnet
+                        try {
+                            await window.ethereum.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [{
+                                    chainId: `0x${OPBNB_CHAIN_ID.toString(16)}`,
+                                    chainName: 'OpBnb Testnet',
+                                    nativeCurrency: {
+                                        name: 'tBNB',
+                                        symbol: 'tBNB',
+                                        decimals: 18
+                                    },
+                                    rpcUrls: ['https://opbnb-testnet-rpc.bnbchain.org'], // RPC URL untuk OpBnb Testnet
+                                    blockExplorerUrls: ['https://opbnb-testnet.bscscan.com/'] // Explorer URL untuk OpBnb Testnet
+                                }],
+                            });
+                            await checkNetwork();
+                        } catch (addError) {
+                            console.error("Error adding network:", addError.message);
+                        }
+                    } else {
+                        console.error("Error switching network:", switchError.message);
+                    }
+                }
+            }
 
-async function mintTokens() {
-    const amountInWei = web3.utils.toWei(MINT_PRICE, 'ether');
-    try {
-        document.getElementById('status').innerText = 'Minting in progress...';
-        const transaction = await minterInstance.methods.mintToken().send({ 
-            from: currentAccount, 
-            value: amountInWei,
-        });
-        document.getElementById('status').innerText = '1000 Tokens minted successfully!';
-        updateWalletInfo();
-    } catch (error) {
-        document.getElementById('status').innerText = `Error minting tokens: ${error.message}`;
-        console.error("Minting error:", error);
-    }
-}
+            async function disconnectWallet() {
+                currentAccount = null;
+                toggleUI('disconnected');
+            }
 
-async function requestSignature(account) {
-    try {
-        // Membuat pesan yang ingin ditandatangani
-        const message = `${account} sign to Republic Of MemeAi`;
+            async function updateWalletInfo() {
+                if (currentAccount) {
+                    document.getElementById('walletAddress').innerText = currentAccount;
+                    const balance = await web3.eth.getBalance(currentAccount);
+                    const balanceInEth = web3.utils.fromWei(balance, 'ether');
+                    document.getElementById('ethBalance').innerText = `${balanceInEth} tBNB`;
+                }
+            }
 
-        // Menggunakan metode eth_sign untuk meminta tanda tangan
-        const signature = await web3.eth.personal.sign(message, account, "");
-        return signature;
-    } catch (error) {
-        console.error("Error signing message:", error.message);
-        return null;
-    }
-}
+            async function mintTokens() {
+                const amountInWei = web3.utils.toWei(MINT_PRICE, 'ether');
+                try {
+                    document.getElementById('status').innerText = 'Minting in progress...';
+                    const transaction = await minterInstance.methods.mintToken().send({ 
+                        from: currentAccount, 
+                        value: amountInWei,
+                    });
+                    document.getElementById('status').innerText = '1000 Tokens minted successfully!';
+                    updateWalletInfo();
+                } catch (error) {
+                    document.getElementById('status').innerText = `Error minting tokens: ${error.message}`;
+                    console.error("Minting error:", error);
+                }
+            }
 
-function toggleUI(state) {
-    const connectWalletBtn = document.getElementById('connectWallet');
-    const walletInfo = document.getElementById('walletInfo');
-    const mintSection = document.getElementById('mintSection');
-    const networkSwitch = document.getElementById('networkSwitch');
-    const status = document.getElementById('status');
+            async function requestSignature(account) {
+                try {
+                    // Membuat pesan yang ingin ditandatangani
+                    const message = `${account} sign to Republic Of MemeAi`;
 
-    switch (state) {
-        case 'connected':
-            connectWalletBtn.style.display = 'none';
-            walletInfo.style.display = 'block';
-            mintSection.style.display = 'block';
-            networkSwitch.style.display = 'none';
-            break;
-        case 'wrongNetwork':
-            connectWalletBtn.style.display = 'none';
-            walletInfo.style.display = 'block';
-            mintSection.style.display = 'none';
-            networkSwitch.style.display = 'block';
-            status.innerText = 'Please switch to the OpBnb Testnet.';
-            break;
-        case 'correctNetwork':
-            networkSwitch.style.display = 'none';
-            mintSection.style.display = 'block';
-            break;
-        case 'disconnected':
-            connectWalletBtn.style.display = 'block';
-            walletInfo.style.display = 'none';
-            mintSection.style.display = 'none';
-            networkSwitch.style.display = 'none';
-            break;
-    }
-}
+                    // Menggunakan metode eth_sign untuk meminta tanda tangan
+                    const signature = await web3.eth.personal.sign(message, account, "");
+                    return signature;
+                } catch (error) {
+                    console.error("Error signing message:", error.message);
+                    return null;
+                }
+            }
 
-window.onload = () => {
-    if (window.ethereum) {
-        web3 = new Web3(window.ethereum);
-        checkNetwork();
-    } else {
-        alert('Please install MetaMask!');
-    }
-};
-    </script>
-</body>
+            function toggleUI(state) {
+                const connectWalletBtn = document.getElementById('connectWallet');
+                const walletInfo = document.getElementById('walletInfo');
+                const mintSection = document.getElementById('mintSection');
+                const networkSwitch = document.getElementById('networkSwitch');
+                const status = document.getElementById('status');
+
+                switch (state) {
+                    case 'connected':
+                        connectWalletBtn.style.display = 'none';
+                        walletInfo.style.display = 'block';
+                        mintSection.style.display = 'block';
+                        networkSwitch.style.display = 'none';
+                        break;
+                    case 'wrongNetwork':
+                        connectWalletBtn.style.display = 'none';
+                        walletInfo.style.display = 'block';
+                        mintSection.style.display = 'none';
+                        networkSwitch.style.display = 'block';
+                        status.innerText = 'Please switch to the OpBnb Testnet.';
+                        break;
+                    case 'correctNetwork':
+                        networkSwitch.style.display = 'none';
+                        mintSection.style.display = 'block';
+                        break;
+                    case 'disconnected':
+                        connectWalletBtn.style.display = 'block';
+                        walletInfo.style.display = 'none';
+                        mintSection.style.display = 'none';
+                        networkSwitch.style.display = 'none';
+                        break;
+                }
+            }
+
+            window.onload = () => {
+                if (window.ethereum) {
+                    web3 = new Web3(window.ethereum);
+                    checkNetwork();
+                } else {
+                    alert('Please install MetaMask!');
+                }
+            };
+        </script>
+    </body>
 </html>
