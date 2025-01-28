@@ -234,7 +234,7 @@ async function connectWallet() {
 // Fungsi untuk memeriksa apakah jaringan yang terhubung adalah jaringan yang benar
 async function checkNetwork() {
     const networkId = await web3.eth.net.getId();
-    const expectedNetworkId = 1; // Ganti dengan ID jaringan yang diinginkan (misalnya 1 untuk Mainnet)
+    const expectedNetworkId = 5611; // Ganti dengan ID jaringan yang diinginkan (misalnya 1 untuk Mainnet)
 
     if (networkId !== expectedNetworkId) {
         alert("Please switch to the correct network.");
