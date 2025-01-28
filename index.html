@@ -6,110 +6,168 @@
     <meta name="description" content="A decentralized application for minting tokens using Ethereum and OPNBN Testnet.">
     <title>Token Minting</title>
     <link rel="stylesheet" href="styles.css">
-    <style>/* Global Styles */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f9;
-    color: #333;
+    <style>
+        :root {
+  --primary-color: #00d4ff; /* Warna biru neon cerah */
+  --secondary-color: #1f2937; /* Warna abu gelap */
+  --text-color: #ffffff; /* Warna teks putih */
+  --bg-color: #0d1117; /* Warna latar belakang hitam cerah */
+  --accent-color: #ff007a; /* Warna aksen merah muda neon */
+  --border-radius: 1rem;
+  --transition: all 0.4s ease;
+  --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-header {
-    background-color: #4CAF50;
-    color: white;
-    padding: 20px;
-    text-align: center;
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', Arial, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin: 0;
+  padding: 2rem;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Animasi latar belakang */
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 0, 122, 0.3), transparent 60%);
+  animation: backgroundGlow 5s infinite alternate;
+  z-index: -1;
+}
+
+@keyframes backgroundGlow {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    transform: translate(-40%, -40%) scale(1.5);
+  }
 }
 
 h1 {
-    margin: 0;
-    font-size: 2em;
+  color: var(--primary-color);
+  margin-bottom: 2rem;
+  text-align: center;
+  font-size: 2.5rem;
+  text-shadow: 0 0 8px var(--primary-color);
 }
 
-p {
-    margin: 10px 0;
-}
-
-/* Button Styles */
 button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
-    margin: 10px 0;
+  background: linear-gradient(145deg, var(--primary-color), var(--accent-color));
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--box-shadow);
 }
 
 button:hover {
-    background-color: #45a049;
+  background: linear-gradient(145deg, var(--accent-color), var(--primary-color));
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0, 212, 255, 0.5);
 }
 
-/* Section Styles */
-section {
-    padding: 20px;
-    margin: 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+#walletInfo, #connectWallet, #mintSection, #networkSwitch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--secondary-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  animation: fadeIn 0.5s ease-out;
 }
 
-section h2 {
-    font-size: 1.5em;
-    color: #333;
-}
-
-/* Wallet Info Section */
-#walletInfo p {
-    margin-bottom: 10px;
-}
-
-#walletInfo button {
-    background-color: #f44336;
-}
-
-#walletInfo button:hover {
-    background-color: #d32f2f;
-}
-
-/* Network Switch Section */
-#networkSwitch {
-    background-color: #ffeb3b;
-}
-
-#networkSwitch p {
-    font-size: 1.2em;
-}
-
-/* Mint Section */
-#mintSection {
-    text-align: center;
+#walletInfo p, #networkSwitch p {
+  text-align: center;
+  margin: 0.5rem 0;
 }
 
 #mintProgress {
-    margin-top: 20px;
+  width: 100%;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1.5rem;
 }
 
-#progressBar {
-    width: 100%;
-    height: 20px;
-    margin-top: 10px;
+progress {
+  width: 100%;
+  height: 1rem;
+  border-radius: var(--border-radius);
+  appearance: none;
+  background-color: var(--secondary-color);
+}
+
+progress::-webkit-progress-bar {
+  background-color: var(--secondary-color);
+}
+
+progress::-webkit-progress-value {
+  background-color: var(--primary-color);
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+}
+
+progress::-moz-progress-bar {
+  background-color: var(--primary-color);
+  border-radius: var(--border-radius);
 }
 
 #progressText {
-    display: block;
-    margin-top: 5px;
+  font-size: 0.9rem;
+  color: var(--text-color);
+  margin-top: 0.5rem;
 }
 
-/* Hidden Elements */
-[style="display: none;"] {
-    display: none;
-}</style>
+#status {
+  margin-top: 1rem;
+  text-align: center;
+  font-weight: bold;
+  color: var(--primary-color);
+  text-shadow: 0 0 5px var(--primary-color);
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  body::before {
+    animation: backgroundGlow 3s infinite alternate;
+  }
+}
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 </head>
 <body>
