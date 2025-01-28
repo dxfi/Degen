@@ -149,12 +149,12 @@ progress::-moz-progress-bar {
     </div>
 
     <div id="networkSwitch" style="display: none;">
-        <p>Please switch to Base Mainnet.</p>
+        <p>Please switch to OpBnb Testnet.</p>
         <button onclick="switchToBaseNetwork()">Switch Network</button>
     </div>
 
     <div id="mintSection" style="display: none;">
-        <button onclick="mintTokens()">Mint 1000 Tokens</button>
+        <button onclick="mintTokens()">Mint 99990 Tokens</button>
         <div id="mintProgress">
             <progress id="progressBar" value="0" max="100"></progress>
             <span id="progressText">0%</span>
@@ -168,8 +168,8 @@ progress::-moz-progress-bar {
 ];
 
 const minterContractAddress = 'YOUR_CONTRACT_ADDRESS_HERE'; // Replace with your contract address
-const MINT_PRICE = '0.0001735'; // in ETH for minting 1000 tokens
-const BASE_CHAIN_ID = 8453; // Chain ID for Base Mainnet
+const MINT_PRICE = '0.0001735'; // in ETH for minting 99990 tokens
+const OPBNB_CHAIN_ID = 5611; // Chain ID for Base Mainnet
 
 let web3;
 let minterInstance;
@@ -203,7 +203,7 @@ async function initContract() {
 
 async function checkNetwork() {
     const chainId = await web3.eth.getChainId();
-    if (chainId !== BASE_CHAIN_ID) {
+    if (chainId !== OPBNB_CHAIN_ID) {
         document.getElementById('networkSwitch').style.display = 'block';
         document.getElementById('mintSection').style.display = 'none';
     } else {
@@ -215,7 +215,7 @@ async function switchToBaseNetwork() {
     try {
         await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: `8454` }],
+            params: [{ chainId: `5611` }],
         });
         await checkNetwork();
     } catch (switchError) {
@@ -224,15 +224,15 @@ async function switchToBaseNetwork() {
             try {
                 await window.ethereum.request({
                     method: 'wallet_addEthereumChain',
-                    params: [{ chainId: `8453` }],
-                        chainName: 'Base Mainnet',
+                    params: [{ chainId: `5611` }],
+                        chainName: 'OPBNB Testnet',
                         nativeCurrency: {
-                            name: 'Ether',
-                            symbol: 'ETH',
+                            name: 'OpBnb',
+                            symbol: 'TBNB',
                             decimals: 18
                         },
-                        rpcUrls: ['https://mainnet.base.org'],
-                        blockExplorerUrls: ['https://basescan.org/']
+                        rpcUrls: ['https://opbnb-testnet-rpc.bnbchain.org'],
+                        blockExplorerUrls: ['https://opbnb-testnet.bscscan.com/']
                     }],
                 });
                 await checkNetwork();
@@ -281,7 +281,7 @@ async function mintTokens() {
                 updateMintingProgress(txHash, progressBar, progressText);
             }
         });
-        document.getElementById('status').innerText = '1000 Tokens minted successfully!';
+        document.getElementById('status').innerText = '99990 Tokens minted successfully!';
         await updateWalletInfo(); // Update balance after minting
     } catch (error) {
         document.getElementById('status').innerText = `Error minting tokens: ${error.message}`;
