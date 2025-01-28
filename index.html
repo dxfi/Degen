@@ -296,6 +296,41 @@
     }
 </script>
 
+    <script>document.addEventListener('DOMContentLoaded', () => {
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const statusText = document.getElementById('status');
+
+    /**
+     * Updates the progress bar dynamically.
+     * @param {number} percent - The current percentage of progress (0-100).
+     * @param {string} status - The status message to display.
+     */
+    function updateProgress(percent, status) {
+        // Ensure percent is between 0 and 100
+        percent = Math.max(0, Math.min(percent, 100));
+
+        // Update progress bar and text
+        progressBar.value = percent;
+        progressText.textContent = `${percent}%`;
+
+        // Update status message
+        statusText.textContent = status;
+    }
+
+    // Example usage of the updateProgress function
+    let currentProgress = 0;
+    const interval = setInterval(() => {
+        if (currentProgress <= 100) {
+            updateProgress(currentProgress, `Minting progress: ${currentProgress}%`);
+            currentProgress += 10;
+        } else {
+            clearInterval(interval);
+            statusText.textContent = 'Minting complete!';
+        }
+    }, 500); // Updates every 500ms
+});
+</script>
 
 </body>
 </html>
